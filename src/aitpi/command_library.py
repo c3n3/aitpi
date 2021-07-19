@@ -1,6 +1,4 @@
 from genericpath import isdir
-# from guitar.messaging.msg_list import CommandLibraryCommand
-# from guitar.messaging.msg_list import FolderMessage
 from aitpi.message import *
 from aitpi.mirrored_json import MirroredJson
 from aitpi.postal_service import PostalService
