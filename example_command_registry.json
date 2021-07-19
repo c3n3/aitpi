@@ -1,0 +1,18 @@
+{
+    "type1": {
+        "NAME1": {
+            "mechanism": "button",
+            "id": "4"
+        },
+        "NAME2": {
+            "mechanism": "button",
+            "id": "5"
+        }
+    },
+    "type2": {
+        "NAME1": {
+            "mechanism": "encoder",
+            "id": ""
+        }
+    }
+}

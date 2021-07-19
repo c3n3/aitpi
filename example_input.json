@@ -1,0 +1,34 @@
+{
+    "Button1": {
+        "type": "button",
+        "mechanism": "key_input",
+        "trigger": "t",
+        "reg_link": "<the registry link>"
+    },
+    "Button2": {
+        "type": "button",
+        "mechanism": "gpio",
+        "trigger": "14",
+        "reg_link": "<the registry link>"
+    },
+    "Encoder1": {
+        "type": "encoder",
+        "mechanism": "key_input",
+        "left_trigger": "q",
+        "right_trigger": "w",
+        "reg_link": "<the registry link>"
+    },
+    "Encoder2": {
+        "type": "encoder",
+        "mechanism": "gpio",
+        "left_trigger": "11",
+        "right_trigger": "21",
+        "reg_link": "<the registry link>"
+    },
+    "Button3": {
+        "type": "key_interrupt",
+        "mechanism": "key_input",
+        "trigger": "u",
+        "reg_link": "<the registry link>"
+    }
+}
