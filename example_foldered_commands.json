@@ -2,11 +2,13 @@
     {
         "path": "path/to/your/folder",
         "type": "<registry_type>",
+        "id": "1",
         "mechanism": "button"
     },
     {
         "path": "another/path",
         "type": "<registry_type>",
+        "id": "2",
         "mechanism": "encoder"
     }
 ]

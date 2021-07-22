@@ -26,8 +26,8 @@
         "reg_link": "<the registry link>"
     },
     "Button3": {
-        "type": "key_interrupt",
-        "mechanism": "key_input",
+        "type": "button",
+        "mechanism": "key_interrupt",
         "trigger": "u",
         "reg_link": "<the registry link>"
     }
