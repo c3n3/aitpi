@@ -29,6 +29,13 @@ class MirroredJson():
         Returns:
             unknown: Some result
         """
+        if (name == ''):
+            return None
+        if (isinstance(self._settings, list)):
+            if (len(self._settings) <= name):
+                Printer.print("Index '%s' out of bounds" % name)
+                return None
+            return self._settings[name]
         if (not (name in self._settings.keys())):
             Printer.print("'{}' not found in {}".format(name, self.file), Printer.ERROR)
             return None
@@ -49,7 +56,7 @@ class MirroredJson():
         """Saves self to mirrord json file
         """
         f = open(self.file,'w')
-        f.write(json.dumps(self._settings))
+        f.write(json.dumps(self._settings, indent=4))
 
     def load(self):
         """Loads from mirrored json file

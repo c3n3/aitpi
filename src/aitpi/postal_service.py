@@ -78,7 +78,7 @@ class PostalService():
         """
         assert isinstance(msg, Message)
         sent = False
-        # Currently messages could be received more thdan one time.
+        # Currently messages could be received more than one time.
         # We may need to add a unique send for each consumer.
 
         # The instant consumer is all powerfull, and eats the messages if consumed

@@ -1,3 +1,4 @@
+from aitpi.input_initializer import InputInitializer
 from aitpi.mirrored_json import MirroredJson
 from aitpi.message import *
 from aitpi.command_library import CommandLibrary
@@ -32,7 +33,9 @@ class InputConverter():
             command (str): The command to change to
         """
         Printer.print("Setting {} to {}".format(input_unit, command))
-        if (input_unit in InputConverter._fixed):
+
+        # TODO: Should we add 'fixed' items?
+        if (False):
             Printer.print("Cannot change input_unit {}".format(input_unit))
         elif (not CommandLibrary.contains(command)):
             Printer.print("Invalid command '{}'".format(command))
@@ -42,29 +45,53 @@ class InputConverter():
             InputConverter._inputUnits[input_unit] = command
 
     @staticmethod
+    def getIndex(name, key='name'):
+        for index, i in enumerate(InputConverter._inputUnits._settings):
+            if (i[key] == name):
+                return index
+        return -1
+
+    @staticmethod
     def consume(msg):
         """Handles sending out commands when button is pressed
 
         Args:
             msg (str): The message containing the input_unit number
         """
-        if (msg is InputChangeRequest):
+        if (isinstance(msg,InputChangeRequest)):
             Printer.print("Change request not supported yet.")
             return
         input_unit = str(msg.data)
-        if (input_unit in list(InputConverter._inputUnits.keys())):
-            PostalService.sendMessage(CommandLibraryCommand(InputConverter._inputUnits[input_unit]))
+        i = InputConverter.getIndex(input_unit)
+        if (i != -1):
+            PostalService.sendMessage(CommandLibraryCommand(InputConverter._inputUnits[i]['reg_link'], msg.event))
         else:
-            Printer.print("'{}' not a valid button: {}".format(input_unit, list(InputConverter._inputUnits.keys())))
+            Printer.print("'{}' not a valid input".format(input_unit))
+
 
     @staticmethod
     def init(file):
+        PostalService.addConsumer([InputCommand.msgId], PostalService.GLOBAL_SUBSCRIPTION, InputConverter)
         InputConverter._inputUnits = MirroredJson(file)
-        for input_unit in list(InputConverter._inputUnits.keys()):
-            if (not CommandLibrary.contains(InputConverter._inputUnits[input_unit]) and InputConverter._inputUnits[input_unit] != ''):
-                Printer.print("Found invalid input_unit command '{}', removing...".format(InputConverter._inputUnits[input_unit]))
-                InputConverter._inputUnits[input_unit] = ''
+        uniqueList = []
+        for index, input_unit in enumerate(InputConverter._inputUnits._settings):
+            if (input_unit['type'] == 'encoder'):
+                uniqueList.append(input_unit['left_trigger'])
+                uniqueList.append(input_unit['right_trigger'])
+            elif (input_unit['type'] == 'button'):
+                uniqueList.append(input_unit['trigger'])
+            else:
+                Printer.print("'%s' type not supported" % input_unit['type'], Printer.ERROR)
+            if (not CommandLibrary.contains(input_unit['reg_link'])
+                and input_unit['reg_link'] != ''):
+                Printer.print("Found invalid input_unit command '{}', removing...".format(input_unit['reg_link']))
+                InputConverter._inputUnits[index]['reg_link'] = ''
         InputConverter._inputUnits.save()
-
-InputConverter.init()
-PostalService.addConsumer([InputCommand.msgId], PostalService.GLOBAL_SUBSCRIPTION, InputConverter)
+        if (len(uniqueList) != len(set(uniqueList))):
+            Printer.print("Duplicate triggers detected: ", Printer.ERROR)
+            for dup in set(uniqueList):
+                if (uniqueList.count(dup) > 1):
+                    Printer.print(" '%s'" % dup)
+        for index, input_unit in enumerate(InputConverter._inputUnits._settings):
+            InputInitializer.initInput(input_unit)
+        Printer.print("Input initialization complete!")

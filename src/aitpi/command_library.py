@@ -27,19 +27,21 @@ class CommandLibrary():
         """
         CommandLibrary._commands = MirroredJson(commandRegJson)
         CommandLibrary._foldersForCommands = MirroredJson(foldersJson)
-        PostalService.addConsumer([CommandLibraryCommand.msgId, FolderMessage.msgId], PostalService.GLOBAL_SUBSCRIPTION, CommandLibrary)
-        CommandLibrary._foldersForCommands.save()
-
+        PostalService.addConsumer(
+            [CommandLibraryCommand.msgId, FolderMessage.msgId],
+            PostalService.GLOBAL_SUBSCRIPTION,
+            CommandLibrary
+        )
 
         CommandLibrary.reloadFolders()
-        for folder in CommandLibrary._foldersForCommands._settings.keys():
-            if (not isdir(folder)):
-                Printer.print("Did not find dir '{}' creating...".format(folder))
-                os.system("mkdir {}".format(folder))
+        for folder in CommandLibrary._foldersForCommands._settings:
+            if (not isdir(folder['path'])):
+                Printer.print("Did not find dir '{}' creating...".format(folder['path']))
+                os.system("mkdir {}".format(folder['path']))
                 time.sleep(0.1)
 
             # Add watch to every folder
-            FolderWatch.watchFolder(folder, FolderMessage.msgId)
+            FolderWatch.watchFolder(folder['path'], FolderMessage.msgId)
 
     @staticmethod
     def contains(command):
@@ -59,11 +61,14 @@ class CommandLibrary():
                     CommandLibrary._commands[T].pop(command)
         # Reset what we have so far.
         CommandLibrary._folderCommands = {}
-        for folder in CommandLibrary._foldersForCommands._settings.keys():
-            for root, dirs, files in os.walk(folder, topdown=False):
+        for index in range(0, len(CommandLibrary._foldersForCommands._settings)):
+            for root, dirs, files in os.walk(
+                CommandLibrary._foldersForCommands[index]['path'],
+                topdown=False
+                ):
                 for name in files:
-                    msgId = CommandLibrary._foldersForCommands[folder]["msgId"]
-                    T = CommandLibrary._foldersForCommands[folder]["type"]
+                    msgId = CommandLibrary._foldersForCommands[index]["id"]
+                    T = CommandLibrary._foldersForCommands[index]["type"]
                     if (not T in CommandLibrary._folderCommands.keys()):
                         CommandLibrary._folderCommands[T] = {}
                     CommandLibrary._folderCommands[T][name] = msgId
@@ -103,7 +108,7 @@ class CommandLibrary():
         return CommandLibrary._commands.keys()
 
     @staticmethod
-    def addCommand(name, messageID, T):
+    def addCommand(name, messageID, T, mechanism):
         """Adds a command to the library
 
         Args:
@@ -119,18 +124,18 @@ class CommandLibrary():
         else:
             if (not T in CommandLibrary._commands.keys()):
                 CommandLibrary._commands[T] = {}
-            CommandLibrary._commands[T][name] = messageID
+            CommandLibrary._commands[T][name] = { "id": messageID, "mechanism": mechanism }
         CommandLibrary.save()
         return True
 
     @staticmethod
-    def removeCommand(name):
+    def removeCommand(T, name):
         """Removes a command
 
         Args:
             name (str): The name to remove
         """
-        CommandLibrary._commands.pop(name)
+        CommandLibrary._commands[T].pop(name)
         CommandLibrary.save()
 
     @staticmethod
@@ -148,23 +153,23 @@ class CommandLibrary():
             msg (Message): Either a command, or a folder update
         """
         if (msg.msgId == CommandLibraryCommand.msgId):
-            CommandLibrary.send(msg.data)
+            CommandLibrary.send(msg)
         elif (msg.msgId == FolderMessage.msgId):
             CommandLibrary.reloadFolders()
 
     @staticmethod
-    def send(command):
+    def send(msg):
         """Handles sending a command to where the library says
 
         Args:
             command (unknown): Some data that will be sent
         """
+        command = msg.data
+        action = msg.event
         for T in CommandLibrary._commands.keys():
             if (command in CommandLibrary._commands[T].keys()):
-                msg = Message(command)
-                msg.msgId = int(CommandLibrary._commands[T][command])
+                msg = InputMessage(command, action)
+                msg.msgId = int(CommandLibrary._commands[T][command]['id'])
                 PostalService.sendMessage(msg)
                 return
         Printer.print("'{}' not found in the command library".format(command))
-
-CommandLibrary.init()

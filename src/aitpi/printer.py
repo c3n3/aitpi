@@ -1,4 +1,6 @@
+
 class Printer():
+
     INFO = "INFO"
     WARNING = "WARNING"
     ERROR = "ERROR"
@@ -10,7 +12,7 @@ class Printer():
         raise "No instantiation, static class"
 
     @staticmethod
-    def print(msg, level = Printer.INFO):
+    def print(msg, level = "INFO"):
         """ Prints out a message according to the log level
 
         Args:

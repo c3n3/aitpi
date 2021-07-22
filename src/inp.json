@@ -1,0 +1,32 @@
+[
+    {
+        "name": "Button1",
+        "type": "button",
+        "mechanism": "key_input",
+        "trigger": "t",
+        "reg_link": "Test2.wav"
+    },
+    {
+        "name": "Button4",
+        "type": "button",
+        "mechanism": "key_input",
+        "trigger": "d",
+        "reg_link": "DistortionToggle"
+    },
+    {
+        "name": "Encoder1",
+        "type": "encoder",
+        "mechanism": "key_input",
+        "left_trigger": "q",
+        "right_trigger": "w",
+        "reg_link": "Volume"
+    },
+    {
+        "name": "Encoder2",
+        "type": "encoder",
+        "mechanism": "key_input",
+        "left_trigger": "a",
+        "right_trigger": "s",
+        "reg_link": "Distortion"
+    }
+]
