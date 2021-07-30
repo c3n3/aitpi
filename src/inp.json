@@ -2,7 +2,7 @@
     {
         "name": "Button1",
         "type": "button",
-        "mechanism": "key_input",
+        "mechanism": "key_interrupt",
         "trigger": "t",
         "reg_link": "Test2.wav"
     },
@@ -28,5 +28,20 @@
         "left_trigger": "a",
         "right_trigger": "s",
         "reg_link": "Distortion"
+    },
+    {
+        "name": "InterruptButton",
+        "type": "button",
+        "mechanism": "key_interrupt",
+        "trigger": "y",
+        "reg_link": "Test2.wav"
+    },
+    {
+        "name": "Vol",
+        "type": "encoder",
+        "mechanism": "key_interrupt",
+        "left_trigger": "o",
+        "right_trigger": "p",
+        "reg_link": "Volume"
     }
 ]
