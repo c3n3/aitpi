@@ -52,3 +52,9 @@ class InputMessage(Message):
     def __init__(self, data, action):
         super().__init__(data)
         self.event = action
+
+class CleanUp(Message):
+    msgId = -1006
+
+    def __init__(self):
+        pass

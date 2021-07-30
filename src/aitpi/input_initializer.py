@@ -112,6 +112,7 @@ class TerminalKeyInput():
             print("Ignoring: ", str)
 
 class InputInitializer():
+    _importedPI = False
     @staticmethod
     def initInput(input):
         if (input['type'] == 'button'):
@@ -136,5 +137,9 @@ class InputInitializer():
             TerminalKeyInput.initEncoder(encoder)
         elif (encoder['mechanism'] == 'key_interrupt'):
             TerminalKeyInput.registerEncoderInterrupt(encoder)
+        elif (encoder['mechanism'] == 'gpio'):
+            if (not InputInitializer._importedPI):
+                from aitpi.pi_input_initializer import PiEncoder
+            PiEncoder(encoder)
         else:
             Printer.print("'%s' is not a supported encoder mechanism" % encoder['mechanism'])
