@@ -58,3 +58,17 @@ class CleanUp(Message):
 
     def __init__(self):
         pass
+
+class AddCommand(Message):
+    msgId = -1007
+
+    def __init__(self, name, id, mechanism):
+        self.name = name
+        self.id = id
+        self.mechanism = mechanism
+
+class RemoveCommand(Message):
+    msgId = -1008
+
+    def __init__(self, name):
+        self.name = name

@@ -1,4 +1,5 @@
 import time
+from aitpi.printer import Printer
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from aitpi.postal_service import PostalService
@@ -13,9 +14,13 @@ class FolderWatch():
     # Will add a folder to be watched, and will send a message at any change with msgId
     @staticmethod
     def watchFolder(folder, msgId):
-        w = Watcher(folder, msgId)
-        FolderWatch.watchers.append(w)
-        w.run()
+        print("WAtching", folder)
+        try:
+            w = Watcher(folder, msgId)
+            FolderWatch.watchers.append(w)
+            w.run()
+        except:
+            Printer.print("Invalid folder '%s'" % folder)
 
     @staticmethod
     def stop():

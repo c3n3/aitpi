@@ -39,9 +39,16 @@ class CommandLibrary():
                 Printer.print("Did not find dir '{}' creating...".format(folder['path']))
                 os.system("mkdir {}".format(folder['path']))
                 time.sleep(0.1)
-
+            try:
+                if (int(folder['id']) < 0):
+                    Printer.print("Message ID below zero for '%s'" % folder['path'], Printer.WARNING)
+                    Printer.print("- Unsupported behavior, negative numbers reserved for AITPI.", Printer.WARNING)
+                else:
+                    FolderWatch.watchFolder(folder['path'], FolderMessage.msgId)
+            # TODO: Check exception type so we don't say this is an invalid ID when another error occured
+            except:
+                Printer.print("Invalid folder message id '%s'" % folder['id'], Printer.ERROR)
             # Add watch to every folder
-            FolderWatch.watchFolder(folder['path'], FolderMessage.msgId)
 
     @staticmethod
     def contains(command):
@@ -52,7 +59,7 @@ class CommandLibrary():
 
     @staticmethod
     def reloadFolders():
-        """Reloads all the command folders i.e recordings / presets
+        """Reloads all the command folders
         """
         # Clear out all old commands
         for T in CommandLibrary._folderCommands.keys():
@@ -71,11 +78,17 @@ class CommandLibrary():
                     T = CommandLibrary._foldersForCommands[index]["type"]
                     if (not T in CommandLibrary._folderCommands.keys()):
                         CommandLibrary._folderCommands[T] = {}
-                    CommandLibrary._folderCommands[T][name] = msgId
+                    CommandLibrary._folderCommands[T][name] = {}
+                    CommandLibrary._folderCommands[T][name]['id'] = msgId
+                    CommandLibrary._folderCommands[T][name]['mechanism'] = CommandLibrary._foldersForCommands[index]["mechanism"]
         # Install each command back into the library
         for T in CommandLibrary._folderCommands.keys():
             for command in CommandLibrary._folderCommands[T].keys():
+                if (not T in CommandLibrary._commands.keys()):
+                    CommandLibrary._commands[T] = {}
+                print(command, CommandLibrary._folderCommands[T][command])
                 CommandLibrary._commands[T][command] = CommandLibrary._folderCommands[T][command]
+                print()
         CommandLibrary.save()
 
     @staticmethod

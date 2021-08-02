@@ -7,6 +7,13 @@
         "reg_link": "Test2.wav"
     },
     {
+        "name": "Button12",
+        "type": "button",
+        "mechanism": "key_input",
+        "trigger": ".",
+        "reg_link": "PRINT"
+    },
+    {
         "name": "Button4",
         "type": "button",
         "mechanism": "key_input",

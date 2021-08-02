@@ -12,6 +12,12 @@ class Watcher():
     def consume(self, message):
         Printer.print(" Watcher: %s %s" % (message.data, message.event))
 
+class PrintCommandLibrary():
+    def consume(self, message):
+        for T in CommandLibrary._commands.keys():
+            for command in CommandLibrary._commands[T]:
+                print("/", T, "/", command)
+
 InputConverter.init("inp.json")
 
 
@@ -20,6 +26,7 @@ InputConverter.init("inp.json")
 #     PostalService.GLOBAL_SUBSCRIPTION,
 #     Watcher())
 PostalService.addConsumer([0], PostalService.GLOBAL_SUBSCRIPTION, Watcher())
+PostalService.addConsumer([1], PostalService.GLOBAL_SUBSCRIPTION, PrintCommandLibrary())
 
 
 while (True):

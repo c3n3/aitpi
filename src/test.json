@@ -4,6 +4,10 @@
             "mechanism": "button",
             "id": "0"
         },
+        "PRINT": {
+            "mechanism": "button",
+            "id": "1"
+        },
         "DistortionToggle": {
             "mechanism": "button",
             "id": "0"
@@ -17,6 +21,16 @@
         "Distortion": {
             "mechanism": "encoder",
             "id": "0"
+        }
+    },
+    "type_test": {
+        "test.txt": {
+            "id": "1",
+            "mechanism": "button"
+        },
+        "another.py": {
+            "id": "1",
+            "mechanism": "button"
         }
     }
 }

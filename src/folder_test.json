@@ -1,1 +1,8 @@
-[]
+[
+    {
+        "path": "/git/AITPI/src/temp",
+        "type": "type_test",
+        "id": "1",
+        "mechanism": "button"
+    }
+]
