@@ -65,7 +65,6 @@ class PiEncoder():
             self.LockRotary.release()
         return
 
-
 class Button():
     _buttons = []
     def __init__(self, button):
