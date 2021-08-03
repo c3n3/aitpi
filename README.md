@@ -7,8 +7,8 @@ mechanism for use with a raspberry pi, or a terminal keyboard.
 
 This program can be configured with two simple json files.
 
-# First up
-The project will support:
+# Supported
+The project supports:
 - Simple 'buttons'
     - '1 to 1' gpio to button setup on a raspberry pi
     - Non interrupt based key input
