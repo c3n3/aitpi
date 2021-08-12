@@ -8,7 +8,7 @@ from time import sleep
 
 __initedPi = False
 
-def __piInit():
+def _piInit():
     global __initedPi
     if (not __initedPi):
         GPIO.setwarnings(True)
@@ -29,13 +29,14 @@ class PiEncoder():
         except:
             Printer.print("Invalid right_trigger '%s' under '%s'" % (encoder['right_trigger'], encoder['name']))
             return
+
+        _piInit()
         self.encoder = encoder
         self.triggerLCounter = 1
         self.triggerRCounter = 1
 
         self.LockRotary = threading.Lock()
         try:
-            __piInit()
             GPIO.setup(self.triggerL, GPIO.IN)
             GPIO.setup(self.triggerR, GPIO.IN)
             GPIO.add_event_detect(self.triggerL, GPIO.RISING, callback=self.handleInterrupt)
@@ -59,33 +60,32 @@ class PiEncoder():
         if (triggerL and triggerR):
             self.LockRotary.acquire()
             if leftOrRight == self.triggerR:
-                PostalService.sendMessage(InputCommand(self.encoder['right_trigger'], "RIGHT"))
+                PostalService.sendMessage(InputCommand(self.encoder['name'], "RIGHT"))
             else:
-                PostalService.sendMessage(InputCommand(self.encoder['left_trigger'], "LEFT"))
+                PostalService.sendMessage(InputCommand(self.encoder['name'], "LEFT"))
             self.LockRotary.release()
         return
 
-class Button():
+class PiButton():
     _buttons = []
     def __init__(self, button):
-        bounce = 150
-        __piInit()
+        bounce = 25
+        _piInit()
         try:
             GPIO.setup(int(button['trigger']), GPIO.IN, pull_up_down=GPIO.PUD_UP)
         except:
             Printer.print("Failed to setup button '%s'" % button['name'])
         try:
-            GPIO.add_event_detect(int(button['trigger']), GPIO.RISING, callback=self.down, bouncetime=bounce)
-            GPIO.add_event_detect(int(button['trigger']), GPIO.FALLING, callback=self.up, bouncetime=bounce)
+            GPIO.add_event_detect(int(button['trigger']), GPIO.BOTH, callback=self.press, bouncetime=bounce)
         except:
             Printer.print("Failed to add event interrupt to button '%s'" % button['name'])
         self.button = button
 
-    def up(self, gpio):
-        PostalService.sendMessage(InputCommand(gpio, "UP"))
-
-    def down(self, gpio):
-        PostalService.sendMessage(InputCommand(gpio, "DOWN"))
+    def press(self, gpio):
+        if (GPIO.input(int(self.button['trigger'])) != 1):
+            PostalService.sendMessage(InputCommand(self.button['name'], "DOWN"))
+        else:
+            PostalService.sendMessage(InputCommand(self.button['name'], "UP"))          
 
 class PiCleanup():
     @staticmethod

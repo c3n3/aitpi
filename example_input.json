@@ -2,8 +2,8 @@
     {
         "name": "Button1",
         "type": "button",
-        "mechanism": "key_interrupt",
-        "trigger": "o",
+        "mechanism": "gpio",
+        "trigger": "5",
         "reg_link": "NAME1"
     },
     {
@@ -23,9 +23,9 @@
     {
         "name": "Encoder1",
         "type": "encoder",
-        "mechanism": "key_interrupt",
-        "left_trigger": "q",
-        "right_trigger": "w",
+        "mechanism": "gpio",
+        "left_trigger": "17",
+        "right_trigger": "23",
         "reg_link": "NAME3"
     }
 ]

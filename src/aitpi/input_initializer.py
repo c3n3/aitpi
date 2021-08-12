@@ -128,6 +128,11 @@ class InputInitializer():
             TerminalKeyInput.initKey(button)
         elif (button['mechanism'] == 'key_interrupt'):
             TerminalKeyInput.registerKeyInterrupt(button)
+        elif (button['mechanism'] == 'gpio'):
+            if (not InputInitializer._importedPI):
+                from aitpi.pi_input_initializer import PiButton
+                from aitpi.pi_input_initializer import PiEncoder
+            PiButton(button)
         else:
             Printer.print("'%s' is not a supported button mechanism" % button['mechanism'])
     
@@ -140,6 +145,7 @@ class InputInitializer():
         elif (encoder['mechanism'] == 'gpio'):
             if (not InputInitializer._importedPI):
                 from aitpi.pi_input_initializer import PiEncoder
+                from aitpi.pi_input_initializer import PiButton
             PiEncoder(encoder)
         else:
             Printer.print("'%s' is not a supported encoder mechanism" % encoder['mechanism'])
