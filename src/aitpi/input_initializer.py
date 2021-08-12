@@ -88,7 +88,7 @@ class TerminalKeyInput():
             return
         TerminalKeyInput._keys[encoder['left_trigger']] = "_left_{}".format(encoder['name'])
         TerminalKeyInput._keys[encoder['right_trigger']] = "_right_{}".format(encoder['name'])
-    
+
     @staticmethod
     def takeInput(str):
         TerminalKeyInput.handleInput(str)
@@ -135,7 +135,7 @@ class InputInitializer():
             PiButton(button)
         else:
             Printer.print("'%s' is not a supported button mechanism" % button['mechanism'])
-    
+
 
     def initEncoder(encoder):
         if (encoder['mechanism'] == 'key_input'):

@@ -23,7 +23,7 @@ class PiEncoder():
         except:
             Printer.print("Invalid left_trigger '%s' under '%s'" % (encoder['left_trigger'], encoder['name']))
             return
-        
+
         try:
             self.triggerR = int(encoder['right_trigger'])
         except:
@@ -85,7 +85,7 @@ class PiButton():
         if (GPIO.input(int(self.button['trigger'])) != 1):
             PostalService.sendMessage(InputCommand(self.button['name'], "DOWN"))
         else:
-            PostalService.sendMessage(InputCommand(self.button['name'], "UP"))          
+            PostalService.sendMessage(InputCommand(self.button['name'], "UP"))
 
 class PiCleanup():
     @staticmethod

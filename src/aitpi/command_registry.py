@@ -11,7 +11,7 @@ from aitpi.printer import Printer
 class CommandRegistry():
     """ Represents a 'registry' of all commands that the user can execute
     """
-    
+
     _registries = []
 
     def __init__(self, commandRegJson=None, foldersJson=None):
@@ -91,7 +91,7 @@ class CommandRegistry():
             for command in self._commands[item['type']]:
                 if (command['path'] == folder):
                     self._commands[item['type']].pop(command)
-        
+
         # Add all the files to the registry
         for root, dirs, files in os.walk(
             folder,
@@ -105,7 +105,7 @@ class CommandRegistry():
                 self._commands[T][name] = {}
                 self._commands[T][name]['id'] = msgId
                 self._commands[T][name]['mechanism'] = item['mechanism']
-        
+
         # Update the mirrored json
         self.save()
 
