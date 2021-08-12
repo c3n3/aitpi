@@ -1,34 +1,31 @@
-{
-    "Button1": {
-        "type": "button",
-        "mechanism": "key_input",
-        "trigger": "t",
-        "reg_link": "<the registry link>"
-    },
-    "Button2": {
-        "type": "button",
-        "mechanism": "gpio",
-        "trigger": "14",
-        "reg_link": "<the registry link>"
-    },
-    "Encoder1": {
-        "type": "encoder",
-        "mechanism": "key_input",
-        "left_trigger": "q",
-        "right_trigger": "w",
-        "reg_link": "<the registry link>"
-    },
-    "Encoder2": {
-        "type": "encoder",
-        "mechanism": "gpio",
-        "left_trigger": "11",
-        "right_trigger": "21",
-        "reg_link": "<the registry link>"
-    },
-    "Button3": {
+[
+    {
+        "name": "Button1",
         "type": "button",
         "mechanism": "key_interrupt",
-        "trigger": "u",
-        "reg_link": "<the registry link>"
+        "trigger": "o",
+        "reg_link": "NAME1"
+    },
+    {
+        "name": "Button2",
+        "type": "button",
+        "mechanism": "key_interrupt",
+        "trigger": "p",
+        "reg_link": "NAME2"
+    },
+    {
+        "name": "Button3",
+        "type": "button",
+        "mechanism": "key_interrupt",
+        "trigger": "i",
+        "reg_link": "TEST1"
+    },
+    {
+        "name": "Encoder1",
+        "type": "encoder",
+        "mechanism": "key_interrupt",
+        "left_trigger": "q",
+        "right_trigger": "w",
+        "reg_link": "NAME3"
     }
-}
+]
