@@ -24,7 +24,7 @@ class RegistryChangeRequest(Message):
         self.name = name
         self.newVal = newVal
 
-class CommandLibraryCommand(Message):
+class CommandRegistryCommand(Message):
     """Sent to command library
     """
     msgId = -1002

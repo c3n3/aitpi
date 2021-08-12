@@ -1,0 +1,1 @@
+import aitpi.command_registry

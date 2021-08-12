@@ -1,7 +1,7 @@
 from aitpi.input_initializer import InputInitializer
 from aitpi.mirrored_json import MirroredJson
 from aitpi.message import *
-from aitpi.command_library import CommandLibrary
+from aitpi.command_registry import CommandRegistry
 from aitpi.postal_service import PostalService
 from aitpi.printer import Printer
 
@@ -37,7 +37,7 @@ class InputConverter():
         # TODO: Should we add 'fixed' items?
         if (False):
             Printer.print("Cannot change input_unit {}".format(input_unit))
-        elif (not CommandLibrary.contains(command)):
+        elif (not CommandRegistry.contains(command)):
             Printer.print("Invalid command '{}'".format(command))
         elif (not input_unit in InputConverter._inputUnits.keys()):
             Printer.print("Invalid input_unit {}".format(input_unit))
@@ -64,7 +64,7 @@ class InputConverter():
         input_unit = str(msg.data)
         i = InputConverter.getIndex(input_unit)
         if (i != -1):
-            PostalService.sendMessage(CommandLibraryCommand(InputConverter._inputUnits[i]['reg_link'], msg.event))
+            PostalService.sendMessage(CommandRegistryCommand(InputConverter._inputUnits[i]['reg_link'], msg.event))
         else:
             Printer.print("'{}' not a valid input".format(input_unit))
 
@@ -82,7 +82,7 @@ class InputConverter():
                 uniqueList.append(input_unit['trigger'])
             else:
                 Printer.print("'%s' type not supported" % input_unit['type'], Printer.ERROR)
-            if (not CommandLibrary.contains(input_unit['reg_link'])
+            if (not CommandRegistry.contains(input_unit['reg_link'])
                 and input_unit['reg_link'] != ''):
                 Printer.print("Found invalid input_unit command '{}', removing...".format(input_unit['reg_link']))
                 InputConverter._inputUnits[index]['reg_link'] = ''
