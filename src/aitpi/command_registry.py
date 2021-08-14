@@ -130,7 +130,7 @@ class CommandRegistry():
                     self._commands[T] = {}
                 self._commands[T][name] = {}
                 self._commands[T][name]['id'] = msgId
-                self._commands[T][name]['mechanism'] = item['mechanism']
+                self._commands[T][name]['input_type'] = item['input_type']
                 self._commands[T][name]['path'] = folder
 
         # Update the mirrored json
@@ -162,7 +162,7 @@ class CommandRegistry():
     def getTypes(self):
         return self._commands.keys()
 
-    def addCommand(self, name, messageID, T, mechanism):
+    def addCommand(self, name, messageID, T, inputType):
         """ Adds a command to the library
 
         Args:
@@ -178,7 +178,7 @@ class CommandRegistry():
         else:
             if (not T in self._commands.keys()):
                 self._commands[T] = {}
-            self._commands[T][name] = { "id": messageID, "mechanism": mechanism }
+            self._commands[T][name] = { "id": messageID, "input_type": inputType }
         self.save()
         return True
 
@@ -216,8 +216,11 @@ class CommandRegistry():
         """
         command = msg.data
         action = msg.event
+        type = msg.type
         for T in self._commands.keys():
             if (command in self._commands[T].keys()):
+                if (self._commands[T][command]['input_type'] != type):
+                    Printer.print("Mismatched input_type for command '%s'" % command, Printer.WARNING)
                 msg = InputMessage(command, action, self._commands[T][command])
                 msg.msgId = int(self._commands[T][command]['id'])
                 PostalService.sendMessage(msg)

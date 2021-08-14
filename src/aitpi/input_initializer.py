@@ -126,7 +126,7 @@ class InputInitializer():
             TerminalKeyInput.initKey(button)
         elif (button['mechanism'] == 'key_interrupt'):
             TerminalKeyInput.registerKeyInterrupt(button)
-        elif (button['mechanism'] == 'gpio'):
+        elif (button['mechanism'] == 'rpi_gpio'):
             if (not InputInitializer._importedPI):
                 from aitpi.pi_input_initializer import PiButton
                 from aitpi.pi_input_initializer import PiEncoder
@@ -140,7 +140,7 @@ class InputInitializer():
             TerminalKeyInput.initEncoder(encoder)
         elif (encoder['mechanism'] == 'key_interrupt'):
             TerminalKeyInput.registerEncoderInterrupt(encoder)
-        elif (encoder['mechanism'] == 'gpio'):
+        elif (encoder['mechanism'] == 'rpi_gpio'):
             if (not InputInitializer._importedPI):
                 from aitpi.pi_input_initializer import PiEncoder
                 from aitpi.pi_input_initializer import PiButton

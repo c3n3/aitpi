@@ -28,9 +28,10 @@ class CommandRegistryCommand(Message):
     """Sent to command library
     """
     msgId = -1002
-    def __init__(self, data, action):
+    def __init__(self, data, action, type):
         super().__init__(data)
         self.event = action
+        self.type = type
 
 class InputCommand(Message):
     """When a button is pressed
@@ -63,10 +64,10 @@ class CleanUp(Message):
 class AddCommand(Message):
     msgId = -1007
 
-    def __init__(self, name, id, mechanism):
+    def __init__(self, name, id, input_type):
         self.name = name
         self.id = id
-        self.mechanism = mechanism
+        self.input_type = input_type
 
 class RemoveCommand(Message):
     msgId = -1008

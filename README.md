@@ -27,29 +27,29 @@ A registry of commands that will interact directly with your user program
 {
     "type0": {
         "commandName0": {
-            "mechanism": "button",
+            "input_type": "button",
             "id": "0"
         },
         "commandName1": {
-            "mechanism": "button",
+            "input_type": "button",
             "id": "1"
         }
     },
     "type1": {
         "commandName2": {
-            "mechanism": "encoder",
+            "input_type": "encoder",
             "id": "2"
         }
     }
 }
 ```
-- The first layer of json define what 'type' each command is. You can use this to sort your commands in a meaningful way.
+- The first layer of this json defines what 'type' each command is. You can use this to sort your commands in a meaningful way.
     - NOTE: Currently, you need a single type layer and cannot have more. This will be remedied in the future to allow 'foldered' types
 - Each command is listed with a name, and a corrosponding dictionary.
     - Each command name must be unique regardless of type (this will be remedied once foldered types are implemented)
-    - Each command must have a 'mechanism' and 'id' attribute
-        - 'mechanism' lets Aitpi know what type of input this can be connected to
-            - Valid mechanisms: 'encoder', 'button'
+    - Each command must have an 'input_type' and 'id' attribute
+        - 'input_type' lets Aitpi know what type of input this can be connected to
+            - Valid input_types: 'encoder', 'button'
         - 'id' is the message id that the command events will be sent over
             - Valid ids: Any positive int, negative ints are reserved for Aitpi and could produce bad side effects
 
@@ -60,16 +60,17 @@ The list of all 'input units' that your system uses
     {
         "name": "Button0",
         "type": "button",
-        "mechanism": "gpio",
+        "mechanism": "rpi_gpio",
         "trigger": "5",
-        "reg_link": "NAME1"
+        "reg_link": "commandName0"
     },
     {
         "name": "Encoder0",
         "type": "encoder",
-        "mechanism": "gpio",
-        "trigger": "5",
-        "reg_link": "NAME1"
+        "mechanism": "rpi_gpio",
+        "left_trigger": "17",
+        "right_trigger": "24",
+        "reg_link": "commandName2"
     }
 ]
 ```
@@ -79,12 +80,17 @@ The list of all 'input units' that your system uses
     - "type": specifies what type of input this unit is
         - Valid types: 'button', 'encoder'
     - "mechanism": This tells Aitpi by what mechanism the input will be watched
-        - Valid mechanisms: 'key_interrupt', 'key_input', 'gpio'
+        - Valid mechanisms: 'key_interrupt', 'key_input', 'rpi_gpio'
             - key_interrupt: Uses [pynput](https://pypi.org/project/pynput/) to set interrupts on your keyboard itself
             - key_input: Manual in-code input through the function 'aitpi.takeInput'
-            - gpio: Raspberry pi GPIO input, all input units are assumed to be active high
-    - "trigger": The key string or gpio number that will trigger input
+            - rpi_gpio: Raspberry pi GPIO input, all input units are assumed to be active high
+    - "trigger": The key string or gpio number that will trigger input for a button
+        - NOTE: This is only needed if 'type' equals 'button'
         - Valid triggers: Any string, or any valid unused gpio number on a raspberry pi
+            - Note strings of more than one char will not work with key_interrupt (pynput)
+    - "left_trigger" and "right_trigger: The key string or gpio numbers that will act as a left or right for an encoder
+        - NOTE: These are only needed if 'type' equals 'encoder'
+        - Valid left_triggers and right_triggers: Any string, or any valid unused gpio number on a raspberry pi
             - Note strings of more than one char will not work with key_interrupt (pynput)
     - "reg_link": This corrosponds to a command from the command registry and will determine what message is sent to your user program
 
@@ -98,13 +104,13 @@ All commands added will be deleted and reloaded upon program startup.
         "path": "/path/to/your/folder",
         "type": "<registry_type>",
         "id": "3",
-        "mechanism": "button"
+        "input_type": "button"
     },
     {
         "path": "/another/path",
         "type": "<registry_type>",
         "id": "4",
-        "mechanism": "encoder"
+        "input_type": "encoder"
     }
 ]
 ```
@@ -115,7 +121,7 @@ All commands added will be deleted and reloaded upon program startup.
         - Valid types: Any string
     - "id": When a command is added from the folder, this id will be the command registry 'id' value
         - Valid ids: Any positive int, negative ints are reserved for Aitpi and could produce bad side effects
-    - "mechanism": When a command is added from the folder, this mechanism will be the command registry 'mechanism' value
+    - "input_type": When a command is added from the folder, this directly corrosponds to the command registry's 'input_type'
 
 
 # Example usage:

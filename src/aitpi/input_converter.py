@@ -64,7 +64,11 @@ class InputConverter():
         input_unit = str(msg.data)
         i = InputConverter.getIndex(input_unit)
         if (i != -1):
-            PostalService.sendMessage(CommandRegistryCommand(InputConverter._inputUnits[i]['reg_link'], msg.event))
+            PostalService.sendMessage(
+                CommandRegistryCommand(
+                    InputConverter._inputUnits[i]['reg_link'],
+                    msg.event,
+                    InputConverter._inputUnits[i]['type']))
         else:
             Printer.print("'{}' not a valid input".format(input_unit))
 
