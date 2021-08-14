@@ -20,6 +20,14 @@ class MirroredJson():
             Printer.print("Unable to find '{}'".format(file), Printer.ERROR)
         self.save()
 
+    def __len__(self):
+        """ So we can call len(MirroredJson)
+
+        Returns:
+            int: The length of the settings
+        """
+        return len(self._settings)
+
     def __getitem__(self, name):
         """Gets a item
 

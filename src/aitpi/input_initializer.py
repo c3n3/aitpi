@@ -108,8 +108,6 @@ class TerminalKeyInput():
             elif("_right_" in val):
                 val = val.replace("_right_", "")
                 PostalService.sendMessage(InputCommand(val, "RIGHT"))
-        else:
-            print("Ignoring: ", str)
 
 class InputInitializer():
     _importedPI = False

@@ -49,9 +49,10 @@ class FolderMessage(Message):
 class InputMessage(Message):
     msgId = -1005
 
-    def __init__(self, data, action):
-        super().__init__(data)
+    def __init__(self, name, action, attributes):
+        self.name = name
         self.event = action
+        self.attributes = attributes
 
 class CleanUp(Message):
     msgId = -1006

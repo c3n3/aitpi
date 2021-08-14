@@ -28,9 +28,35 @@ class CommandRegistry():
             self
         )
         if (self._foldersForCommands != None):
+
+            # Watch all the folders
             self.initFoldersForCommands()
+
+            # Remove all old foldered commands
+            self.cleanAllFolderCommands()
+
+            # Reload all commands from the folders
+            for folder in range(0, len(self._foldersForCommands)):
+                self.reloadFolder(self._foldersForCommands[folder]['path'])
         CommandRegistry._registries.append(self)
 
+    def cleanAllFolderCommands(self):
+        for item in self._foldersForCommands._settings:
+            if (item == None):
+                return
+            # Clear out all old commands
+            # We assume the folder has changed entirely
+            if (item['type'] in self._commands.keys()):
+                toPop = []
+                for command in self._commands[item['type']]:
+                    info = self._commands[item['type']][command]
+
+                    # We remove all foldered commands by knowing they all have the 'path' attribute
+                    if ('path' in info):
+                        toPop.append(command)
+                for pop in toPop:
+                    self._commands[item['type']].pop(pop)
+        self.save()
 
     def initFoldersForCommands(self):
         """ Takes care of initalizing the foldersForCommands setup
@@ -89,7 +115,7 @@ class CommandRegistry():
         # We assume the folder has changed entirely
         if (item['type'] in self._commands.keys()):
             for command in self._commands[item['type']]:
-                if (command['path'] == folder):
+                if (item['path'] == folder):
                     self._commands[item['type']].pop(command)
 
         # Add all the files to the registry
@@ -105,6 +131,7 @@ class CommandRegistry():
                 self._commands[T][name] = {}
                 self._commands[T][name]['id'] = msgId
                 self._commands[T][name]['mechanism'] = item['mechanism']
+                self._commands[T][name]['path'] = folder
 
         # Update the mirrored json
         self.save()
@@ -191,7 +218,7 @@ class CommandRegistry():
         action = msg.event
         for T in self._commands.keys():
             if (command in self._commands[T].keys()):
-                msg = InputMessage(command, action)
+                msg = InputMessage(command, action, self._commands[T][command])
                 msg.msgId = int(self._commands[T][command]['id'])
                 PostalService.sendMessage(msg)
                 return

@@ -136,7 +136,7 @@ class PostalService():
         sent = False
         if (msg.msgId in PostalService._passiveIdToConsumers.keys()):
             for c in PostalService._passiveIdToConsumers[msg.msgId]:
-                c.receiveBuffer.append(msg)
+                c.mailBox.append(msg)
                 sent = True
         return sent
 

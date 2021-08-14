@@ -19,4 +19,4 @@ class Printer():
             msg (str): the message to print
             level (str): the log level. Use class defined levels
         """
-        print("ABTPI {}: {}".format(level, msg))
+        print("AITPI {}: {}".format(level, msg))

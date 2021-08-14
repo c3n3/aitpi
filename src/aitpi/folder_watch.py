@@ -14,13 +14,13 @@ class FolderWatch():
     # Will add a folder to be watched, and will send a message at any change with msgId
     @staticmethod
     def watchFolder(folder, msgId):
-        print("WAtching", folder)
+        Printer.print("Watching: '%s'" % folder)
         try:
             w = Watcher(folder, msgId)
             FolderWatch.watchers.append(w)
             w.run()
         except:
-            Printer.print("Invalid folder '%s'" % folder)
+            Printer.print("Invalid folder '%s'" % folder, level=Printer.ERROR)
 
     @staticmethod
     def stop():

@@ -6,6 +6,7 @@ from aitpi.input_converter import InputConverter
 from aitpi.postal_service import PostalService
 from aitpi.message import *
 from aitpi.printer import Printer
+from aitpi.input_initializer import TerminalKeyInput
 from aitpi.input_initializer import *
 
 _initRegistry = False
@@ -25,3 +26,6 @@ def initInput(inputJson):
 def shutdown():
     PostalService.sendMessage(CleanUp())
     Printer.print("OFF")
+
+def takeInput(input):
+    TerminalKeyInput.takeInput(input)

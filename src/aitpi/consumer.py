@@ -8,12 +8,12 @@ class Consumer():
     def __init__(self):
         """inits the recieve buffer
         """
-        self.receiveBuffer = []
+        self.mailBox = []
 
-    def consume(self, msg):
-        """Consumes a message
+    def consume(self, mail):
+        """called when you get mail
 
         Args:
-            msg (Message): The message recieved
+            mail (Message): The mail recieved
         """
         Printer.print("Default comsumer recieved some message")
