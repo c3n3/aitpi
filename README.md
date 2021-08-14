@@ -83,7 +83,7 @@ The list of all 'input units' that your system uses
         - Valid mechanisms: 'key_interrupt', 'key_input', 'rpi_gpio'
             - key_interrupt: Uses [pynput](https://pypi.org/project/pynput/) to set interrupts on your keyboard itself
             - key_input: Manual in-code input through the function 'aitpi.takeInput'
-            - rpi_gpio: Raspberry pi GPIO input, all input units are assumed to be active high
+            - rpi_gpio: Raspberry pi GPIO input, all input units are assumed to be active low
     - "trigger": The key string or gpio number that will trigger input for a button
         - NOTE: This is only needed if 'type' equals 'button'
         - Valid triggers: Any string, or any valid unused gpio number on a raspberry pi

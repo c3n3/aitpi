@@ -1,5 +1,7 @@
 
 class Printer():
+    """ The printer for Aitpi
+    """
 
     INFO = "INFO"
     WARNING = "WARNING"

@@ -5,10 +5,12 @@ class PostalService():
     """Big class handles sending messages to 'subscriptions' via message IDs
 
        Has three types of subscriptions currently:
-           - Global -> Everything is always sent and consumed whenever
+           - GLOBAL -> Everything is always sent and consumed whenever you send a message
            - PASSIVE -> Everything is always sent to you, but instead of
-                        consuming right aways, is stored in a queue
+                        consuming right away, it is stored in a queue
            - ACTIVE -> Things are sent and consumed only when you are set as 'active'
+
+       TODO: Add priorities to the queues for sending
     """
     GLOBAL_SUBSCRIPTION = 0
     PASSIVE_SUBSCRIPTION = 1

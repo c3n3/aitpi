@@ -3,17 +3,14 @@ import os
 from aitpi.printer import Printer
 
 class MirroredJson():
-    """Represents a setting, that can and will be saved to a mirrored json file.
+    """ Tries its best to mimick a json file, and reflect changes in file upon saving.
+        Very useful for handling settings that need to be persistent
     """
     def __init__(self, file):
-        """inits a new setting
+        """ The file to mirror
 
         Args:
-            name (name of setting): [description]
-            t (str): The type of setting, determines which folder it is placed
-            settings (dict, optional): A dictionary of all settings. Defaults to None.
-            autoLoadUponCreation (bool, optional): Tells if this should auto load the settings. Defaults to True.
-            defaultFile (string): A file that will be loaded in case the normal file does not exist
+            file (string): path to the file
         """
         self.file = file
         if (not self.load()):
@@ -95,6 +92,6 @@ class MirroredJson():
             if_fail (str, optional): What happens on failure. Defaults to "".
 
         Returns:
-            TODO: result
+            unknown: result
         """
         return self._settings.pop(key, if_fail)

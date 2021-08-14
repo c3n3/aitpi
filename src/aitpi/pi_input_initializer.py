@@ -6,9 +6,12 @@ import RPi.GPIO as GPIO
 import threading
 from time import sleep
 
+# lets us know if we already inited the pi system
 __initedPi = False
 
 def _piInit():
+    """ Initializes the pi system
+    """
     global __initedPi
     if (not __initedPi):
         GPIO.setwarnings(True)
@@ -16,8 +19,18 @@ def _piInit():
     __initedPi = True
 
 class PiEncoder():
+    """ Represents an encoder on a raspberry pi
+    """
+
+    # A static list of all encoders created
     _initedEncoders = []
+
     def __init__(self, encoder):
+        """ Creates a new encoder, and registers to the static list
+
+        Args:
+            encoder (Dictionary): Info about the encoder
+        """
         try:
             self.triggerL = int(encoder['left_trigger'])
         except:
@@ -48,6 +61,11 @@ class PiEncoder():
         return
 
     def handleInterrupt(self, leftOrRight):
+        """ Hanles interrupts from the GPIO system
+
+        Args:
+            leftOrRight (int): Could be the left or right gpio
+        """
         triggerL = GPIO.input(self.triggerL)
         triggerR = GPIO.input(self.triggerR)
 
@@ -67,29 +85,51 @@ class PiEncoder():
         return
 
 class PiButton():
+    """ Handles initalization and interrupt handling of pi buttons
+    """
+    
+    BUTTON_BOUNCE = 25 # ms
+    
+    # A static list of all pi buttons inited
     _buttons = []
+
     def __init__(self, button):
-        bounce = 25
+        """ Creates and adds a button to the static list
+
+        Args:
+            button (Dictionary): Info about the button
+        """
+
         _piInit()
         try:
             GPIO.setup(int(button['trigger']), GPIO.IN, pull_up_down=GPIO.PUD_UP)
         except:
             Printer.print("Failed to setup button '%s'" % button['name'])
         try:
-            GPIO.add_event_detect(int(button['trigger']), GPIO.BOTH, callback=self.press, bouncetime=bounce)
+            GPIO.add_event_detect(int(button['trigger']), GPIO.BOTH, callback=self.press, bouncetime=PiButton.BUTTON_BOUNCE)
         except:
             Printer.print("Failed to add event interrupt to button '%s'" % button['name'])
         self.button = button
 
     def press(self, gpio):
+        """ Event handler when gpio changes
+
+        Args:
+            gpio (int): GPIO pin number
+        """
+
+        # NOTE: Hardcoded active low
         if (GPIO.input(int(self.button['trigger'])) != 1):
             PostalService.sendMessage(InputCommand(self.button['name'], "DOWN"))
         else:
             PostalService.sendMessage(InputCommand(self.button['name'], "UP"))
 
 class PiCleanup():
+    """ Cleans up the gpio upon shutdown
+    """
     @staticmethod
     def consume(msg):
         GPIO.cleanup()
 
+# We will listen for any cleanup messages
 PostalService.addConsumer([CleanUp.msgId], PostalService.GLOBAL_SUBSCRIPTION, PiCleanup)

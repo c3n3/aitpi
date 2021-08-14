@@ -45,9 +45,18 @@ class InputConverter():
             InputConverter._inputUnits[input_unit] = command
 
     @staticmethod
-    def getIndex(name, key='name'):
+    def getIndex(value, key='name'):
+        """ Gets the index of an item by an attribute
+
+        Args:
+            value (string): The value of the attribute we are looking for
+            key (str, optional): The attribute key we are looking for. Defaults to 'name'.
+
+        Returns:
+            int: The index of the item, -1 if not found
+        """
         for index, i in enumerate(InputConverter._inputUnits._settings):
-            if (i[key] == name):
+            if (i[key] == value):
                 return index
         return -1
 
@@ -58,9 +67,6 @@ class InputConverter():
         Args:
             msg (str): The message containing the input_unit number
         """
-        if (isinstance(msg,InputChangeRequest)):
-            Printer.print("Change request not supported yet.")
-            return
         input_unit = str(msg.data)
         i = InputConverter.getIndex(input_unit)
         if (i != -1):
@@ -75,6 +81,11 @@ class InputConverter():
 
     @staticmethod
     def init(file):
+        """Initializes all the input mechanisms
+
+        Args:
+            file (string): The string 
+        """
         PostalService.addConsumer([InputCommand.msgId], PostalService.GLOBAL_SUBSCRIPTION, InputConverter)
         InputConverter._inputUnits = MirroredJson(file)
         uniqueList = []

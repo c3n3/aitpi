@@ -41,6 +41,8 @@ class CommandRegistry():
         CommandRegistry._registries.append(self)
 
     def cleanAllFolderCommands(self):
+        """ Removes all folderd commands from the json file
+        """
         for item in self._foldersForCommands._settings:
             if (item == None):
                 return
@@ -160,6 +162,11 @@ class CommandRegistry():
         return ret
 
     def getTypes(self):
+        """ Returns all types in the registry
+
+        Returns:
+            list: list of all types
+        """
         return self._commands.keys()
 
     def addCommand(self, name, messageID, T, inputType):
