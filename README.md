@@ -1,5 +1,5 @@
 # AITPI
-Arbitrary Input for Terminal or a PI, or Aitpi (pronounced 'eight pi')
+Arbitrary Input for Terminal or a Pi, or Aitpi (pronounced 'eight pi')
 
 # Goal
 The goal of this project is to provide a simple, but arbitrary, input
@@ -28,17 +28,17 @@ A registry of commands that will interact directly with your user program
     "type0": {
         "commandName0": {
             "mechanism": "button",
-            "id": "4"
+            "id": "0"
         },
         "commandName1": {
             "mechanism": "button",
-            "id": "5"
+            "id": "1"
         }
     },
     "type1": {
         "commandName2": {
             "mechanism": "encoder",
-            "id": "1"
+            "id": "2"
         }
     }
 }
@@ -97,13 +97,13 @@ All commands added will be deleted and reloaded upon program startup.
     {
         "path": "/path/to/your/folder",
         "type": "<registry_type>",
-        "id": "1",
+        "id": "3",
         "mechanism": "button"
     },
     {
         "path": "/another/path",
         "type": "<registry_type>",
-        "id": "2",
+        "id": "4",
         "mechanism": "encoder"
     }
 ]
@@ -116,3 +116,44 @@ All commands added will be deleted and reloaded upon program startup.
     - "id": When a command is added from the folder, this id will be the command registry 'id' value
         - Valid ids: Any positive int, negative ints are reserved for Aitpi and could produce bad side effects
     - "mechanism": When a command is added from the folder, this mechanism will be the command registry 'mechanism' value
+
+
+# Example usage:
+```python
+
+# import the base aitpi
+import aitpi
+
+# The postal service allows us to receive messages
+from aitpi.postal_service import PostalService
+
+# In order to receive messages we must have an object with a consume(message) function
+# This does not need to be a class.
+# This is a simple example of how to implement a 'consumer'
+class Watcher():
+    def consume(self, message):
+        print("Got command: %s" % message.name)
+        print("On event: %s" % message.event)
+        print("All attributes: %s" % message.attributes)
+
+watcher = Watcher()
+
+# Here we add a consumer that will receive commands with ids 0,1,2,3,4, these ids are the sameconsume
+# as defined in your registry json file.consume
+PostalService.addConsumer([0,1,2,3,4], PostalService.GLOBAL_SUBSCRIPTION, watcher)
+
+# We must first initialize our command registry before we can start getting input
+aitpi.addRegistry("<path_to_json>/command_reg.json", "<path_to_json>/foldered_commands.json")
+
+# We can add multiple registries, and do not need the foldered commands
+aitpi.addRegistry("<path_to_json>/another_reg.json")
+
+# Once we initialize our system, all interrupt based commands can be sent imediately.
+# Therefore, make sure you are ready to handle any input in your functions before calling this.
+aitpi.initInput("<path_to_json>/example_input.json")
+
+# For synchronous input (not interrupt based) using the 'key_input' input mechanism is desireable
+# You can setup a custom progromatic form of input using this (If it is good enough, add it to AITPI!)
+while (True):
+    aitpi.takeInput(input())
+```
