@@ -17,6 +17,8 @@ class CommandRegistry():
     def __init__(self, commandRegJson=None, foldersJson=None):
         """ Setup data structures
         """
+        self.regFile = commandRegJson
+        self.foldersFile = foldersJson
         self._commands = None
         self._foldersForCommands = None
         self._folderCommands = {}
@@ -90,11 +92,18 @@ class CommandRegistry():
     def contains(command):
         """ Returns whether the command exists in this registry
         """
+        if (CommandRegistry.getCommand(command) == None):
+            return False
+        return True
+
+    @staticmethod
+    def getCommand(command):
         for registry in CommandRegistry._registries:
             for commandList in registry._commands.keys():
                 if (command in registry._commands[commandList].keys()):
-                    return True
-        return False
+                    return registry._commands[commandList][command]
+        return None
+
 
     def findByProperty(self, array, propertyName, propertyVal):
         """ Find an item in an array by a property of that item

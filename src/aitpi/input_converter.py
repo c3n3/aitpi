@@ -34,15 +34,21 @@ class InputConverter():
         """
         Printer.print("Setting {} to {}".format(input_unit, command))
 
-        # TODO: Should we add 'fixed' items?
-        if (False):
-            Printer.print("Cannot change input_unit {}".format(input_unit))
-        elif (not CommandRegistry.contains(command)):
-            Printer.print("Invalid command '{}'".format(command))
-        elif (not input_unit in InputConverter._inputUnits.keys()):
+        itemIndex = InputConverter.getIndex(input_unit)
+
+        if (itemIndex == -1):
             Printer.print("Invalid input_unit {}".format(input_unit))
-        else:
-            InputConverter._inputUnits[input_unit] = command
+            return
+        if (not CommandRegistry.contains(command)):
+            Printer.print("Invalid command '{}'".format(command))
+            return
+        t1 = InputConverter._inputUnits[itemIndex]['type']
+        t2 = CommandRegistry.getCommand(command)['input_type']
+        if (t1 != t2):
+            Printer.print("Changing to mismatch input type '%s' '%s'" % (t1, t2), Printer.WARNING)
+
+        InputConverter._inputUnits[itemIndex]['reg_link'] = command
+        InputConverter._inputUnits.save()
 
     @staticmethod
     def getIndex(value, key='name'):

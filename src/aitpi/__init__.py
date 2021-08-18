@@ -47,3 +47,16 @@ def takeInput(input):
         input (string): Anything
     """
     TerminalKeyInput.takeInput(input)
+
+def addCommandsToRegistry(registryFile, command, id, type, inputType):
+    for registry in CommandRegistry._registries:
+        if (registry.regFile == registryFile):
+            registry.addCommand(command, id, type, inputType)
+
+def removeCommandFromRegistry(registryFile, command, type):
+    for registry in CommandRegistry._registries:
+        if (registry.regFile == registryFile):
+            registry.removeCommand(type, command)
+
+def changeInputRegLink(inputName, regLink):
+    InputConverter.change(inputName, regLink)
