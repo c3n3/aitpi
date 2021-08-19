@@ -21,7 +21,6 @@ class CommandRegistry():
         self.foldersFile = foldersJson
         self._commands = None
         self._foldersForCommands = None
-        self._folderCommands = {}
         self._commands = MirroredJson(commandRegJson)
         self._foldersForCommands = MirroredJson(foldersJson) if foldersJson != None else None
         PostalService.addConsumer(
@@ -104,6 +103,16 @@ class CommandRegistry():
                     return registry._commands[commandList][command]
         return None
 
+    @staticmethod
+    def getFolder(foldersFile, name):
+        for registry in CommandRegistry._registries:
+            if (registry.foldersFile != foldersFile):
+                continue
+            for index in range(0, len(registry._foldersForCommands)):
+                folder = registry._foldersForCommands[index]
+                if (folder['name'] == name):
+                    return folder
+        return None
 
     def findByProperty(self, array, propertyName, propertyVal):
         """ Find an item in an array by a property of that item

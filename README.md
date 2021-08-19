@@ -101,12 +101,14 @@ All commands added will be deleted and reloaded upon program startup.
 ```
 [
     {
+        "name": "Folder0",
         "path": "/path/to/your/folder",
         "type": "<registry_type>",
         "id": "3",
         "input_type": "button"
     },
     {
+        "name": "Folder1",
         "path": "/another/path",
         "type": "<registry_type>",
         "id": "4",
@@ -115,6 +117,8 @@ All commands added will be deleted and reloaded upon program startup.
 ]
 ```
 - This is an array of depth 1 that lists all the folders you want to add
+    - "name": Gives a name that you can use to access the json using 'getFolderedCommands'
+        - Valid names: Any string
     - "path": Specifies the folder that will be watched
         - Valid paths: Any valid folder on your system
     - "type": This will tell Aitpi where to insert the commands from the folder into your command registry

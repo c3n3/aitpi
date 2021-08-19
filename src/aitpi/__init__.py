@@ -82,3 +82,12 @@ def changeInputRegLink(inputName, regLink):
         regLink (string): The new link to a command registry
     """
     InputConverter.change(inputName, regLink)
+
+def getFolderedCommands(foldersFile, folderedName):
+    """[summary]
+
+    Args:
+        foldersFile (string): The path to the json file the registry mirrors
+        folderedName (string): The name of the foldered comands entry
+    """
+    return CommandRegistry.getFolder(foldersFile, folderedName)
