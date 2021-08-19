@@ -48,15 +48,37 @@ def takeInput(input):
     """
     TerminalKeyInput.takeInput(input)
 
-def addCommandsToRegistry(registryFile, command, id, type, inputType):
+def addCommandToRegistry(registryFile, command, id, type, inputType):
+    """ Adds a command to the registry
+
+    Args:
+        registryFile (string): The path to the json file the registry mirrors
+        command (string): string denoting the name of the command
+        id (int): The id the command will be sent over
+        type (string): The type of the new command
+        inputType (string): the type of input 'button', 'encoder'
+    """
     for registry in CommandRegistry._registries:
         if (registry.regFile == registryFile):
             registry.addCommand(command, id, type, inputType)
 
 def removeCommandFromRegistry(registryFile, command, type):
+    """ Removes a command from the registry
+
+    Args:
+        registryFile (string): The path to the json file the registry mirrors
+        command (string): The name of the command
+        type (string): The type of the command
+    """
     for registry in CommandRegistry._registries:
         if (registry.regFile == registryFile):
             registry.removeCommand(type, command)
 
 def changeInputRegLink(inputName, regLink):
+    """ Changes the reg link of an input unit
+
+    Args:
+        inputName (string): The input unit name
+        regLink (string): The new link to a command registry
+    """
     InputConverter.change(inputName, regLink)
