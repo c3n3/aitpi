@@ -134,7 +134,7 @@ class CommandRegistry():
         # Clear out all old commands
         # We assume the folder has changed entirely
         if (item['type'] in self._commands.keys()):
-            for command in self._commands[item['type']]:
+            for command in list(self._commands[item['type']]):
                 if (item['path'] == folder):
                     self._commands[item['type']].pop(command)
 
