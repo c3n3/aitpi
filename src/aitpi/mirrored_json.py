@@ -13,8 +13,9 @@ class MirroredJson():
             file (string): path to the file
         """
         self.file = file
+
         if (not self.load()):
-            Printer.print("Unable to find '{}'".format(file), Printer.ERROR)
+            self._settings = {}
         self.save()
 
     def __len__(self):
