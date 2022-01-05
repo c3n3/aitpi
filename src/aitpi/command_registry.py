@@ -216,6 +216,16 @@ class CommandRegistry():
         self._commands[T].pop(name)
         self.save()
 
+    def clearType(self, T):
+        """ Removes all the commands of a type
+
+        Args:
+            T (string): the type
+        """
+        if (T in self._commands.keys()):
+            self._commands[T] = {}
+            self.save()
+
     def save(self):
         """ Saves all the commands to the mirrored json
         """
@@ -250,3 +260,6 @@ class CommandRegistry():
                 msg.msgId = int(self._commands[T][command]['id'])
                 PostalService.sendMessage(msg)
                 return
+
+    def updateFromFile(self):
+        self._commands.load()

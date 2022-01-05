@@ -62,6 +62,29 @@ def addCommandToRegistry(registryFile, command, id, type, inputType):
         if (registry.regFile == registryFile):
             registry.addCommand(command, id, type, inputType)
 
+def clearCommandTypeInRegistry(registryFile, type):
+    """ Clears all commands from a 'type' in a registry
+
+    Args:
+        registryFile (string): The path to the json file the registry mirrors
+        type (string): The type to clear
+    """
+    for registry in CommandRegistry._registries:
+        if (registry.regFile == registryFile):
+            registry.clearType(type)
+            break
+
+def updateRegistryFromFile(registryFile):
+    """ Updates registry from file
+
+    Args:
+        registryFile (string): The path to the json file the registry mirrors
+    """
+    for registry in CommandRegistry._registries:
+        if (registry.regFile == registryFile):
+            registry.updateFromFile()
+            break
+
 def removeCommandFromRegistry(registryFile, command, type):
     """ Removes a command from the registry
 
