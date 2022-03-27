@@ -105,11 +105,10 @@ class CommandRegistry():
 
     @staticmethod
     def getAllCommandsGlobal():
-        ret = []
+        ret = {}
         for registry in CommandRegistry._registries:
             for commandList in registry._commands.keys():
-                for command in registry._commands[commandList].keys():
-                    ret.append(command)
+                ret[commandList] = registry._commands[commandList]
         return ret
 
     @staticmethod
