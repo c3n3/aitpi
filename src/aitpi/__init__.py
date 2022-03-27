@@ -1,3 +1,4 @@
+from setuptools import Command
 from aitpi.message import CleanUp
 from aitpi.printer import Printer
 from aitpi.postal_service import PostalService
@@ -114,3 +115,12 @@ def getFolderedCommands(foldersFile, folderedName):
         folderedName (string): The name of the foldered comands entry
     """
     return CommandRegistry.getFolder(foldersFile, folderedName)
+
+def getCommands():
+    """ Gets all the commands from any command registry
+
+    Returns:
+        []: an array of all command names
+    """
+    return CommandRegistry.getAllCommandsGlobal()
+    

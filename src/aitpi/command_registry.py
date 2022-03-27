@@ -104,6 +104,15 @@ class CommandRegistry():
         return None
 
     @staticmethod
+    def getAllCommandsGlobal():
+        ret = []
+        for registry in CommandRegistry._registries:
+            for commandList in registry._commands.keys():
+                for command in registry._commands[commandList].keys():
+                    ret.append(command)
+        return ret
+
+    @staticmethod
     def getFolder(foldersFile, name):
         for registry in CommandRegistry._registries:
             if (registry.foldersFile != foldersFile):
