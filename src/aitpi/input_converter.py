@@ -2,7 +2,7 @@ from aitpi.input_initializer import InputInitializer
 from aitpi.mirrored_json import MirroredJson
 from aitpi.message import *
 from aitpi.command_registry import CommandRegistry
-from aitpi.postal_service import PostalService
+from aitpi import router
 from aitpi.printer import Printer
 
 class InputConverter():
@@ -76,7 +76,7 @@ class InputConverter():
         input_unit = str(msg.data)
         i = InputConverter.getIndex(input_unit)
         if (i != -1):
-            PostalService.sendMessage(
+            router.sendMessage(
                 CommandRegistryCommand(
                     InputConverter._inputUnits[i]['reg_link'],
                     msg.event,
@@ -92,7 +92,7 @@ class InputConverter():
         Args:
             file (string): The string 
         """
-        PostalService.addConsumer([InputCommand.msgId], PostalService.GLOBAL_SUBSCRIPTION, InputConverter)
+        router.addConsumer([InputCommand.msgId], InputConverter)
         InputConverter._inputUnits = MirroredJson(file)
         uniqueList = []
         for index, input_unit in enumerate(InputConverter._inputUnits._settings):

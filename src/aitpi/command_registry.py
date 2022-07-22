@@ -1,7 +1,7 @@
 from genericpath import isdir
 from aitpi.message import *
 from aitpi.mirrored_json import MirroredJson
-from aitpi.postal_service import PostalService
+from aitpi import router
 from aitpi.folder_watch import FolderWatch
 import os
 import time
@@ -23,9 +23,8 @@ class CommandRegistry():
         self._foldersForCommands = None
         self._commands = MirroredJson(commandRegJson)
         self._foldersForCommands = MirroredJson(foldersJson) if foldersJson != None else None
-        PostalService.addConsumer(
+        router.addConsumer(
             [CommandRegistryCommand.msgId],
-            PostalService.GLOBAL_SUBSCRIPTION,
             self
         )
         if (self._foldersForCommands != None):
@@ -66,9 +65,8 @@ class CommandRegistry():
         """
 
         # Now we need to subscribe to the folder messages
-        PostalService.addConsumer(
+        router.addConsumer(
             [FolderMessage.msgId],
-            PostalService.GLOBAL_SUBSCRIPTION,
             self
         )
         for folder in self._foldersForCommands._settings:
@@ -266,7 +264,7 @@ class CommandRegistry():
                     Printer.print("Mismatched input_type for command '%s'" % command, Printer.WARNING)
                 msg = InputMessage(command, action, self._commands[T][command])
                 msg.msgId = int(self._commands[T][command]['id'])
-                PostalService.sendMessage(msg)
+                router.sendMessage(msg)
                 return
 
     def updateFromFile(self):

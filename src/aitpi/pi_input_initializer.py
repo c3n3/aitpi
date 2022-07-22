@@ -1,6 +1,6 @@
 from os import stat
 from aitpi.printer import Printer
-from aitpi.postal_service import PostalService
+from aitpi import router
 from aitpi.message import *
 import RPi.GPIO as GPIO
 import threading
@@ -78,9 +78,9 @@ class PiEncoder():
         if (triggerL and triggerR):
             self.LockRotary.acquire()
             if leftOrRight == self.triggerR:
-                PostalService.sendMessage(InputCommand(self.encoder['name'], "RIGHT"))
+                router.sendMessage(InputCommand(self.encoder['name'], "RIGHT"))
             else:
-                PostalService.sendMessage(InputCommand(self.encoder['name'], "LEFT"))
+                router.sendMessage(InputCommand(self.encoder['name'], "LEFT"))
             self.LockRotary.release()
         return
 
@@ -89,7 +89,11 @@ class PiButton():
     """
     
     BUTTON_BOUNCE = 25 # ms
-    
+
+    # Change these to UP DOWN or whatever you want
+    highValue = "1"
+    lowValue = "0"
+
     # A static list of all pi buttons inited
     _buttons = []
 
@@ -118,11 +122,10 @@ class PiButton():
             gpio (int): GPIO pin number
         """
 
-        # NOTE: Hardcoded active low
         if (GPIO.input(int(self.button['trigger'])) != 1):
-            PostalService.sendMessage(InputCommand(self.button['name'], "DOWN"))
+            router.sendMessage(InputCommand(self.button['name'], PiButton.lowValue))
         else:
-            PostalService.sendMessage(InputCommand(self.button['name'], "UP"))
+            router.sendMessage(InputCommand(self.button['name'], PiButton.highValue))
 
 class PiCleanup():
     """ Cleans up the gpio upon shutdown
@@ -132,4 +135,4 @@ class PiCleanup():
         GPIO.cleanup()
 
 # We will listen for any cleanup messages
-PostalService.addConsumer([CleanUp.msgId], PostalService.GLOBAL_SUBSCRIPTION, PiCleanup)
+router.addConsumer([CleanUp.msgId], PiCleanup)

@@ -2,7 +2,7 @@ import time
 from aitpi.printer import Printer
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
-from aitpi.postal_service import PostalService
+from aitpi import router
 from aitpi.message import FolderMessage
 from aitpi.message import Message
 
@@ -74,4 +74,4 @@ class Watcher(FileSystemEventHandler):
         if event.is_directory:
             return None
         elif (event.event_type == 'deleted' or event.event_type == 'created' or event.event_type == 'modified'):
-            PostalService.sendMessage(msg)
+            router.sendMessage(msg)
