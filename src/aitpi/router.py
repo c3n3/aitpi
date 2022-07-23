@@ -34,14 +34,11 @@ def sendMessage(msg):
     """
     sent = False
     if (msg.msgId in _consumers.keys()):
-        print(_consumers)
         for c in _consumers[msg.msgId]:
             # If there is no consume function, assume callable
             if 'consume' in dir(c[0]):
-                print("Con")
                 c[0].consume(msg)
             else:
-                print("Call")
                 c[0](msg)
             sent = True
     return sent
