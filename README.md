@@ -135,7 +135,7 @@ All commands added will be deleted and reloaded upon program startup.
 import aitpi
 
 # The postal service allows us to receive messages
-from aitpi.postal_service import PostalService
+from aitpi import router
 
 # In order to receive messages we must have an object with a consume(message) function
 # This does not need to be a class.
@@ -150,7 +150,7 @@ watcher = Watcher()
 
 # Here we add a consumer that will receive commands with ids 0,1,2,3,4, these ids are the sameconsume
 # as defined in your registry json file.consume
-PostalService.addConsumer([0,1,2,3,4], PostalService.GLOBAL_SUBSCRIPTION, watcher)
+router.addConsumer([0,1,2,3,4], watcher)
 
 # We must first initialize our command registry before we can start getting input
 aitpi.addRegistry("<path_to_json>/command_reg.json", "<path_to_json>/foldered_commands.json")

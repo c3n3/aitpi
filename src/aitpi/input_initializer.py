@@ -1,6 +1,6 @@
 from os import stat
 from aitpi.printer import Printer
-from aitpi.postal_service import PostalService
+from aitpi import router
 from aitpi.message import *
 class TerminalKeyInput():
     """Handles input from a keyboard
@@ -64,15 +64,15 @@ class TerminalKeyInput():
             val = map[str]
             if ("_button_" in val):
                 val = map[str].replace("_button_", "")
-                PostalService.sendMessage(InputCommand(val, action))
+                router.sendMessage(InputCommand(val, action))
             # We only care about up presses for encoders
             # NOTE: This seems really minor and natural, but could be configurable with the json
             elif("_left_" in val and action == "UP"):
                 val = val.replace("_left_", "")
-                PostalService.sendMessage(InputCommand(val, "LEFT"))
+                router.sendMessage(InputCommand(val, "LEFT"))
             elif("_right_" in val and action == "UP"):
                 val = val.replace("_right_", "")
-                PostalService.sendMessage(InputCommand(val, "RIGHT"))
+                router.sendMessage(InputCommand(val, "RIGHT"))
 
     @staticmethod
     def registerKeyInterrupt(key):
@@ -156,14 +156,14 @@ class TerminalKeyInput():
             val = map[str]
             if ("_button_" in val):
                 val = map[str].replace("_button_", "")
-                PostalService.sendMessage(InputCommand(val, "DOWN"))
-                PostalService.sendMessage(InputCommand(val, "UP"))
+                router.sendMessage(InputCommand(val, "DOWN"))
+                router.sendMessage(InputCommand(val, "UP"))
             elif("_left_" in val):
                 val = val.replace("_left_", "")
-                PostalService.sendMessage(InputCommand(val, "LEFT"))
+                router.sendMessage(InputCommand(val, "LEFT"))
             elif("_right_" in val):
                 val = val.replace("_right_", "")
-                PostalService.sendMessage(InputCommand(val, "RIGHT"))
+                router.sendMessage(InputCommand(val, "RIGHT"))
 
 class InputInitializer():
     """ Handles initializing all input

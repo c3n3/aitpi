@@ -1,10 +1,9 @@
 from setuptools import Command
 from aitpi.message import CleanUp
 from aitpi.printer import Printer
-from aitpi.postal_service import PostalService
+from aitpi import router
 from aitpi.command_registry import CommandRegistry
 from aitpi.input_converter import InputConverter
-from aitpi.postal_service import PostalService
 from aitpi.message import *
 from aitpi.printer import Printer
 from aitpi.input_initializer import TerminalKeyInput
@@ -38,8 +37,7 @@ def initInput(inputJson):
 def shutdown():
     """ Disables the Aitpi TODO: Does nothing
     """
-    PostalService.sendMessage(CleanUp())
-    Printer.print("OFF")
+    router.sendMessage(CleanUp())
 
 def takeInput(input):
     """ Takes arbitrary string input to pass into the command system
