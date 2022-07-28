@@ -6,6 +6,10 @@ class TerminalKeyInput():
     """Handles input from a keyboard
     """
 
+    # Change these to whatever you want, high is when pressed, low is when not pressed
+    highValue = "1"
+    lowValue = "0"
+
     # The keys registered for manual input
     _keys = {}
 
@@ -37,7 +41,7 @@ class TerminalKeyInput():
         # We are not guaranteed a char input, NOTE: Maybe we need to support non char keys?
         if (not hasattr(key, 'char')):
             return
-        TerminalKeyInput.handleInterrupt(key.char, "DOWN")
+        TerminalKeyInput.handleInterrupt(key.char, "1")
 
     @staticmethod
     def onRelease(key):
@@ -49,7 +53,7 @@ class TerminalKeyInput():
         # We are not guaranteed a char input, NOTE: Maybe we need to support non char keys?
         if (not hasattr(key, 'char')):
             return
-        TerminalKeyInput.handleInterrupt(key.char, "UP")
+        TerminalKeyInput.handleInterrupt(key.char, "0")
 
     @staticmethod
     def handleInterrupt(str, action):
@@ -57,7 +61,7 @@ class TerminalKeyInput():
 
         Args:
             str (string): The key pressed
-            action ([type]): The event that took place to trigger this, "UP" or "DOWN"
+            action ([type]): The event that took place to trigger this, "0" or "1"
         """
         map = TerminalKeyInput._keyInterrupts
         if (str in map):
@@ -67,10 +71,10 @@ class TerminalKeyInput():
                 router.sendMessage(InputCommand(val, action))
             # We only care about up presses for encoders
             # NOTE: This seems really minor and natural, but could be configurable with the json
-            elif("_left_" in val and action == "UP"):
+            elif("_left_" in val and action == "1"):
                 val = val.replace("_left_", "")
                 router.sendMessage(InputCommand(val, "LEFT"))
-            elif("_right_" in val and action == "UP"):
+            elif("_right_" in val and action == "1"):
                 val = val.replace("_right_", "")
                 router.sendMessage(InputCommand(val, "RIGHT"))
 
@@ -156,8 +160,8 @@ class TerminalKeyInput():
             val = map[str]
             if ("_button_" in val):
                 val = map[str].replace("_button_", "")
-                router.sendMessage(InputCommand(val, "DOWN"))
-                router.sendMessage(InputCommand(val, "UP"))
+                router.sendMessage(InputCommand(val, TerminalKeyInput.highValue))
+                router.sendMessage(InputCommand(val, TerminalKeyInput.lowValue))
             elif("_left_" in val):
                 val = val.replace("_left_", "")
                 router.sendMessage(InputCommand(val, "LEFT"))

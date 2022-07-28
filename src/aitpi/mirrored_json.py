@@ -6,14 +6,14 @@ class MirroredJson():
     """ Tries its best to mimick a json file, and reflect changes in file upon saving.
         Very useful for handling settings that need to be persistent
     """
-    def __init__(self, file):
+    def __init__(self, file, autosave=True):
         """ The file to mirror
 
         Args:
             file (string): path to the file
         """
         self.file = file
-
+        self.autosave = autosave
         if (not self.load()):
             self._settings = {}
         self.save()
@@ -56,7 +56,8 @@ class MirroredJson():
             val (unkown): Some thing
         """
         self._settings[name] = val
-        self.save()
+        if self.autosave:
+            self.save()
 
     def save(self):
         """Saves self to mirrord json file
