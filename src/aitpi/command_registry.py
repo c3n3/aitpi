@@ -14,6 +14,20 @@ class CommandRegistry():
 
     _registries = []
 
+    @staticmethod
+    def findByProperty(array, propertyName, propertyVal):
+        """ Find an item in an array by a property of that item
+
+            Returns:
+                bool: if contains
+        """
+        index = 0
+        for item in array:
+            if (item[propertyName] == propertyVal):
+                return index, item
+            index += 1
+        return -1, None
+
     def __init__(self, commandRegJson=None, foldersJson=None):
         """ Setup data structures
         """
@@ -49,9 +63,11 @@ class CommandRegistry():
             # Clear out all old commands
             # We assume the folder has changed entirely
             commands = self.getCommandsByType(item['type'])
+            index = 0
             for command in commands:
                 if 'path' in command:
-                    self._commands.pop(command)
+                    self._commands.remove(command)
+                index += 1
         self.save()
 
     def initFoldersForCommands(self):
@@ -90,16 +106,16 @@ class CommandRegistry():
     @staticmethod
     def getCommand(command):
         for registry in CommandRegistry._registries:
-            if (command in registry._commands):
-                return registry._commands[command]
+            index, command = registry._commands.findByProperty(command)
+            if command:
+                return command
         return None
 
     @staticmethod
     def getAllCommandsGlobal():
-        ret = {}
+        ret = []
         for registry in CommandRegistry._registries:
-            for commandList in registry._commands.keys():
-                ret[commandList] = registry._commands[commandList]
+            ret.extend(registry._commands._settings)
         return ret
 
     @staticmethod
@@ -113,29 +129,17 @@ class CommandRegistry():
                     return folder
         return None
 
-    def findByProperty(self, array, propertyName, propertyVal):
-        """ Find an item in an array by a property of that item
-
-            Returns:
-                bool: if contains
-        """
-        for item in array:
-            if (item[propertyName] == propertyVal):
-                return item
-        return None
-
     def reloadFolder(self, folder):
         """ Reloads all the command folders
         """
-        item = self.findByProperty(self._foldersForCommands, 'path', folder)
+        index, item = self._foldersForCommands.findByProperty(folder, 'path')
         if (item == None):
             return
         commandsToClean = []
+        index = 0
         for command in self._commands:
-            if self._commands[command]['type'] == item['type']:
-                commandsToClean.append(command)
-        for command in commandsToClean:
-            self._commands.pop(command)
+            if command['type'] == item['type']:
+                self._commands.remove(command)
 
         # Add all the files to the registry
         for root, dirs, files in os.walk(
@@ -144,12 +148,13 @@ class CommandRegistry():
             ):
             for name in files:
                 msgId = item['id']
-                if (name not in self._commands.keys()):
-                    self._commands[name] = {}
-                self._commands[name]['id'] = msgId
-                self._commands[name]['input_type'] = item['input_type']
-                self._commands[name]['path'] = folder
-                self._commands[name]['type'] = item['type']
+                val = {}
+                val['id'] = msgId
+                val['input_type'] = item['input_type']
+                val['path'] = folder
+                val['type'] = item['type']
+                val['name'] = name
+                self._commands.append(val)
         # Update the mirrored json
         self.save()
 
@@ -167,10 +172,10 @@ class CommandRegistry():
         Returns:
             Dictionary: commands
         """
-        ret = {}
+        ret = []
         for command in self._commands:
-            if self._commands[command]['type'] == T:
-                ret[command] = self._commands[command]
+            if command['type'] == T:
+                ret.append(command)
         return ret
 
     def getTypes(self):
@@ -181,9 +186,9 @@ class CommandRegistry():
         """
         ret = []
         for command in self._commands:
-            if self._commands[command]['type'] not in ret:
+            if command['type'] not in ret:
                 ret.append(command['type'])
-        return self._commands.keys()
+        return ret
 
     def addCommand(self, name, messageID, T, inputType):
         """ Adds a command to the library
@@ -199,7 +204,7 @@ class CommandRegistry():
             Printer.print("Cannot add '{}', duplicate name".format(name))
             return False
         else:
-            self._commands[name] = { "id": messageID, "input_type": inputType, 'type': T }
+            self._commands.append({ "id": messageID, "input_type": inputType, 'type': T, 'name': name})
         self.save()
         return True
 
@@ -209,8 +214,10 @@ class CommandRegistry():
         Args:
             name (str): The name to remove
         """
-        self._commands.pop(name)
-        self.save()
+        index, item = self._commands.findByProperty(name)
+        if item:
+            self._commands.pop(index)
+            self.save()
 
     def clearType(self, T):
         """ Removes all the commands of a type
@@ -219,9 +226,11 @@ class CommandRegistry():
             T (string): the type
         """
         purgeList = []
+        index = 0
         for command in self._commands:
-            if self._commands[command]['type'] == T:
-                purgeList.append(command)
+            if command['type'] == T:
+                purgeList.append(index)
+            index += 1
         for purge in purgeList:
             self._commands.pop(purge)
 
@@ -251,11 +260,12 @@ class CommandRegistry():
         command = msg.data
         action = msg.event
         type = msg.type
-        if (command in self._commands):
-            if (self._commands[command]['input_type'] != type):
-                Printer.print("Mismatched input_type for command '%s'" % command, Printer.WARNING)
-            msg = InputMessage(command, action, self._commands[command])
-            msg.msgId = int(self._commands[command]['id'])
+        index, command = self._commands.findByProperty(command)
+        if (command is not None):
+            if (command['input_type'] != type):
+                Printer.print("Mismatched input_type for command '%s'" % command['name'], Printer.WARNING)
+            msg = InputMessage(command['name'], action, command)
+            msg.msgId = int(command['id'])
             router.sendMessage(msg)
             return
 

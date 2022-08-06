@@ -6,6 +6,7 @@ class MirroredJson():
     """ Tries its best to mimick a json file, and reflect changes in file upon saving.
         Very useful for handling settings that need to be persistent
     """
+
     def __init__(self, file, autosave=True):
         """ The file to mirror
 
@@ -17,6 +18,7 @@ class MirroredJson():
         if (not self.load()):
             self._settings = {}
         self.save()
+        self.type = type(self._settings)
 
     def __iter__(self):
         return iter(self._settings)
@@ -102,4 +104,32 @@ class MirroredJson():
         Returns:
             unknown: result
         """
+        if self.type == list:
+            return self._settings.pop(key)
         return self._settings.pop(key, if_fail)
+
+    def remove(self, item):
+        """Pops an item from settings
+
+        Args:
+            key (str): The key to pop
+            if_fail (str, optional): What happens on failure. Defaults to "".
+
+        Returns:
+            unknown: result
+        """
+        return self._settings.remove(item)
+
+    def append(self, item):
+        if self.type == list:
+            self._settings.append(item)
+        else:
+            Printer.print('Mirror JSON is not a list', "ERROR")
+
+    def findByProperty(self, value, property='name'):
+        index = 0
+        for item in self._settings:
+            if type(item) is dict and item[property] == value:
+                return index, item
+            index += 1
+        return -1, None
