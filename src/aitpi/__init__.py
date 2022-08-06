@@ -122,6 +122,12 @@ def getCommandsByInputType(inputType):
             ret.append(command)
     return ret
 
+def getCommandsByType(T):
+    ret = []
+    for registry in CommandRegistry._registries:
+        ret.extend(registry.getCommandsByType(T))
+    return ret
+
 def getCommands():
     """ Gets all the commands from any command registry
 
@@ -134,3 +140,12 @@ def getInputs():
     """ Get all of the inputs from json
     """
     return InputConverter._inputUnits._settings
+
+def getInputsByType(T):
+    """ Get inputs by their type
+    """
+    ret = []
+    for input in InputConverter._inputUnits:
+        if input['type'] == T:
+            ret.append(input)
+    return ret

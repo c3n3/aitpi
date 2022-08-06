@@ -167,10 +167,10 @@ class CommandRegistry():
         return self._commands
 
     def getCommandsByType(self, T):
-        """ Gets a dict of commands by type
+        """ Gets a list of commands by type
 
         Returns:
-            Dictionary: commands
+            list: commands
         """
         ret = []
         for command in self._commands:
