@@ -18,6 +18,12 @@ class MirroredJson():
             self._settings = {}
         self.save()
 
+    def __iter__(self):
+        return iter(self._settings)
+        if type(self._settings) is dict:
+            return self._settings.keys()
+        return self._settings
+
     def __len__(self):
         """ So we can call len(MirroredJson)
 

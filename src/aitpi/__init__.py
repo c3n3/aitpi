@@ -84,7 +84,7 @@ def updateRegistryFromFile(registryFile):
             registry.updateFromFile()
             break
 
-def removeCommandFromRegistry(registryFile, command, type):
+def removeCommandFromRegistry(registryFile, command):
     """ Removes a command from the registry
 
     Args:
@@ -94,7 +94,7 @@ def removeCommandFromRegistry(registryFile, command, type):
     """
     for registry in CommandRegistry._registries:
         if (registry.regFile == registryFile):
-            registry.removeCommand(type, command)
+            registry.removeCommand(command)
 
 def changeInputRegLink(inputName, regLink):
     """ Changes the reg link of an input unit
