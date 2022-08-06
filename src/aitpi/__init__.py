@@ -121,4 +121,8 @@ def getCommands():
         []: an array of all command names
     """
     return CommandRegistry.getAllCommandsGlobal()
-    
+
+def getInputs():
+    """ Get all of the inputs from json
+    """
+    return InputConverter._inputUnits._settings

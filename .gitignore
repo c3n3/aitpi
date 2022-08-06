@@ -6,3 +6,4 @@ temp/
 __main__.py
 *.json
 .vscode
+build
