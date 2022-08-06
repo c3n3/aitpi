@@ -114,6 +114,14 @@ def getFolderedCommands(foldersFile, folderedName):
     """
     return CommandRegistry.getFolder(foldersFile, folderedName)
 
+def getCommandsByInputType(inputType):
+    commands = CommandRegistry.getAllCommandsGlobal()
+    ret = []
+    for command in commands:
+        if command['input_type'] == inputType:
+            ret.append(command)
+    return ret
+
 def getCommands():
     """ Gets all the commands from any command registry
 
