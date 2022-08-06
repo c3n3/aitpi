@@ -169,7 +169,6 @@ class CommandRegistry():
         """
         ret = {}
         for command in self._commands:
-            print(command)
             if self._commands[command]['type'] == T:
                 ret[command] = self._commands[command]
         return ret
@@ -182,7 +181,7 @@ class CommandRegistry():
         """
         ret = []
         for command in self._commands:
-            if command['type'] not in ret:
+            if self._commands[command]['type'] not in ret:
                 ret.append(command['type'])
         return self._commands.keys()
 
@@ -221,7 +220,7 @@ class CommandRegistry():
         """
         purgeList = []
         for command in self._commands:
-            if command['type'] == T:
+            if self._commands[command]['type'] == T:
                 purgeList.append(command)
         for purge in purgeList:
             self._commands.pop(purge)
