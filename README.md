@@ -24,34 +24,41 @@ To configure your setup, you can create up to three types of json files:
 ## Command Registry:
 A registry of commands that will interact directly with your user program
 ```
-{
-    "type0": {
-        "commandName0": {
-            "input_type": "button",
-            "id": "0"
-        },
-        "commandName1": {
-            "input_type": "button",
-            "id": "1"
-        }
+[
+    {
+        "type": "normal",
+        "input_type": "button",
+        "id": "1",
+        "name": "command0"
     },
-    "type1": {
-        "commandName2": {
-            "input_type": "encoder",
-            "id": "2"
-        }
+    {
+        "id": "1",
+        "input_type": "button",
+        "path": "../temp/",
+        "type": "presets",
+        "name": "howdy"
+    },
+    {
+        "id": "1",
+        "input_type": "button",
+        "path": "../temp/",
+        "type": "presets",
+        "name": "test"
+    },
+    {
+        "id": "1",
+        "input_type": "button",
+        "path": "../temp/",
+        "type": "presets",
+        "name": "another.txt"
     }
-}
+]
 ```
-- The first layer of this json defines what 'type' each command is. You can use this to sort your commands in a meaningful way.
-    - NOTE: Currently, you need a single type layer and cannot have more. This will be remedied in the future to allow 'foldered' types
-- Each command is listed with a name, and a corrosponding dictionary.
-    - Each command name must be unique regardless of type (this will be remedied once foldered types are implemented)
-    - Each command must have an 'input_type' and 'id' attribute
-        - 'input_type' lets Aitpi know what type of input this can be connected to
-            - Valid input_types: 'encoder', 'button'
-        - 'id' is the message id that the command events will be sent over
-            - Valid ids: Any positive int, negative ints are reserved for Aitpi and could produce bad side effects
+- name: A UNIQUE identifier that is presented.
+- id: The message id sent with each command
+- input_type: The abstract functional representation i.e. (for now) a button or an encoder
+- type: Category for each command. Must be defined, but is only used to sort commands usefully
+- path: Only used for foldered commands. Tells the file path of the represented file.
 
 ## Input list
 The list of all 'input units' that your system uses
@@ -137,9 +144,8 @@ import aitpi
 # The postal service allows us to receive messages
 from aitpi import router
 
-# In order to receive messages we must have an object with a consume(message) function
-# This does not need to be a class.
-# This is a simple example of how to implement a 'consumer'
+# In order to receive messages can either make an object with a consume(message) function
+# or just provide a function `def consume(message)`
 class Watcher():
     def consume(self, message):
         print("Got command: %s" % message.name)
