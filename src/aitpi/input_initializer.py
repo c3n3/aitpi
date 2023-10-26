@@ -41,9 +41,10 @@ class TerminalKeyInput():
             key (Key): A key object defined by pynput
         """
         # We are not guaranteed a char input, NOTE: Maybe we need to support non char keys?
-        if (not hasattr(key, 'char')):
-            return
-        TerminalKeyInput.handleInterrupt(key.char, "1")
+        if (hasattr(key, 'char')):
+            TerminalKeyInput.handleInterrupt(key.char, "1")
+        else:
+            TerminalKeyInput.handleInterrupt(key, "1")
 
     @staticmethod
     def onRelease(key):
@@ -53,9 +54,10 @@ class TerminalKeyInput():
             key (Key): A key object defined by pynput
         """
         # We are not guaranteed a char input, NOTE: Maybe we need to support non char keys?
-        if (not hasattr(key, 'char')):
-            return
-        TerminalKeyInput.handleInterrupt(key.char, "0")
+        if (hasattr(key, 'char')):
+            TerminalKeyInput.handleInterrupt(key.char, "0")
+        else:
+            TerminalKeyInput.handleInterrupt(key, "1")
 
     @staticmethod
     def handleInterrupt(str, action):
@@ -81,6 +83,28 @@ class TerminalKeyInput():
                 router.sendMessage(InputCommand(val, "RIGHT"))
 
     @staticmethod
+    def generateHotKeyPressInterruptFun(key):
+        """ Simply calls the normal press interrupt handler
+
+        Args:
+            key (string): The hotkey string 
+        """
+        def fun():
+            TerminalKeyInput.onPress(key)
+        return fun
+
+    @staticmethod
+    def generateHotKeyReleaseInterruptFun(key):
+        """ Simply calls the normal release interrupt handler
+
+        Args:
+            key (string): The hotkey string 
+        """
+        def fun():
+            TerminalKeyInput.onRelease(key)
+        return fun
+
+    @staticmethod
     def registerKeyInterrupt(key):
         """ Registers a new interrupt key to report
 
@@ -99,6 +123,15 @@ class TerminalKeyInput():
             Printer.print("Duplicate trigger '%s', ignoring" % key['trigger'])
             return
         TerminalKeyInput._keyInterrupts[key['trigger']] = "_button_{}".format(key['name'])
+
+        if (len(key['trigger']) > 1):
+            print("settig up hotkey")
+            from pynput import keyboard
+            with keyboard.GlobalHotKeys({
+                key['trigger']: TerminalKeyInput.generateHotKeyPressInterruptFun(key['trigger'])
+            }) as h:
+                h.join()
+
 
     @staticmethod
     def registerEncoderInterrupt(encoder):
@@ -186,12 +219,17 @@ class InputInitializer():
         Args:
             input (Dictionary): information about the input unit
         """
+        if ('type' not in input):
+            input['type'] = 'button'
+
         if (input['type'] == 'button'):
             InputInitializer.initButton(input)
         elif (input['type'] == 'encoder'):
             InputInitializer.initEncoder(input)
         else:
             Printer.print("'%s' is not a supported type" % input['type'])
+
+    defaultButtonIndex = 0
 
     @staticmethod
     def initButton(button):
@@ -200,6 +238,14 @@ class InputInitializer():
         Args:
             button (Dictionary): Info about the button
         """
+        # Default to key_interrupt
+        if ('mechanism' not in button):
+            button['mechanism'] = 'key_interrupt'
+
+        if ('name' not in button):
+            button['name'] = "B" + str(InputInitializer.defaultButtonIndex)
+            InputInitializer.defaultButtonIndex += 1
+
         if (button['mechanism'] == 'key_input'):
             TerminalKeyInput.initKey(button)
         elif (button['mechanism'] == 'key_interrupt'):
@@ -212,6 +258,7 @@ class InputInitializer():
         else:
             Printer.print("'%s' is not a supported button mechanism" % button['mechanism'])
 
+    defaultEncoderIndex = 0
 
     def initEncoder(encoder):
         """ Init a new encoder
@@ -219,6 +266,14 @@ class InputInitializer():
         Args:
             encoder (Dictionary): Info about the encoder
         """
+        # Default to key_interrupt
+        if ('mechanism' not in encoder):
+            encoder['mechanism'] = 'key_interrupt'
+
+        if ('name' not in encoder):
+            encoder['name'] = "E" + str(InputInitializer.defaultEncoderIndex)
+            InputInitializer.defaultButtonIndex += 1
+
         if (encoder['mechanism'] == 'key_input'):
             TerminalKeyInput.initEncoder(encoder)
         elif (encoder['mechanism'] == 'key_interrupt'):

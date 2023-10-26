@@ -84,7 +84,6 @@ class InputConverter():
         else:
             Printer.print("'{}' not a valid input".format(input_unit))
 
-
     @staticmethod
     def init(file):
         """Initializes all the input mechanisms
@@ -96,13 +95,14 @@ class InputConverter():
         InputConverter._inputUnits = MirroredJson(file)
         uniqueList = []
         for index, input_unit in enumerate(InputConverter._inputUnits._settings):
-            if (input_unit['type'] == 'encoder'):
-                uniqueList.append(input_unit['left_trigger'])
-                uniqueList.append(input_unit['right_trigger'])
-            elif (input_unit['type'] == 'button'):
-                uniqueList.append(input_unit['trigger'])
-            else:
-                Printer.print("'%s' type not supported" % input_unit['type'], Printer.ERROR)
+            if ('type' in input_unit):
+                if (input_unit['type'] == 'encoder'):
+                    uniqueList.append(input_unit['left_trigger'])
+                    uniqueList.append(input_unit['right_trigger'])
+                elif (input_unit['type'] == 'button'):
+                    uniqueList.append(input_unit['trigger'])
+                else:
+                    Printer.print("'%s' type not supported" % input_unit['type'], Printer.ERROR)
             if (not CommandRegistry.contains(input_unit['reg_link'])
                 and input_unit['reg_link'] != ''):
                 Printer.print("Found invalid input_unit command '{}', removing...".format(input_unit['reg_link']))
