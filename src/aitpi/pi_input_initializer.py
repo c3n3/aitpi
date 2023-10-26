@@ -1,10 +1,11 @@
 from os import stat
-from aitpi.printer import Printer
-from aitpi import router
-from aitpi.message import *
+from .printer import Printer
+from . import router
+from .message import *
 import RPi.GPIO as GPIO
 import threading
 from time import sleep
+from . import constants
 
 # lets us know if we already inited the pi system
 __initedPi = False
@@ -91,8 +92,8 @@ class PiButton():
     BUTTON_BOUNCE = 25 # ms
 
     # Change these to UP DOWN or whatever you want
-    highValue = "1"
-    lowValue = "0"
+    highValue = constants.BUTTON_PRESS
+    lowValue = constants.BUTTON_RELEASE
 
     # A static list of all pi buttons inited
     _buttons = []

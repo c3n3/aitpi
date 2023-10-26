@@ -1,14 +1,16 @@
 from os import stat
-from aitpi.printer import Printer
-from aitpi import router
-from aitpi.message import *
+from .printer import Printer
+from . import router
+from .message import *
+from . import constants
+
 class TerminalKeyInput():
     """Handles input from a keyboard
     """
 
     # Change these to whatever you want, high is when pressed, low is when not pressed
-    highValue = "1"
-    lowValue = "0"
+    highValue = constants.BUTTON_PRESS
+    lowValue = constants.BUTTON_RELEASE
 
     # The keys registered for manual input
     _keys = {}
@@ -204,8 +206,8 @@ class InputInitializer():
             TerminalKeyInput.registerKeyInterrupt(button)
         elif (button['mechanism'] == 'rpi_gpio'):
             if (not InputInitializer._importedPI):
-                from aitpi.pi_input_initializer import PiButton
-                from aitpi.pi_input_initializer import PiEncoder
+                from .pi_input_initializer import PiButton
+                from .pi_input_initializer import PiEncoder
             PiButton(button)
         else:
             Printer.print("'%s' is not a supported button mechanism" % button['mechanism'])
@@ -223,8 +225,8 @@ class InputInitializer():
             TerminalKeyInput.registerEncoderInterrupt(encoder)
         elif (encoder['mechanism'] == 'rpi_gpio'):
             if (not InputInitializer._importedPI):
-                from aitpi.pi_input_initializer import PiEncoder
-                from aitpi.pi_input_initializer import PiButton
+                from .pi_input_initializer import PiEncoder
+                from .pi_input_initializer import PiButton
             PiEncoder(encoder)
         else:
             Printer.print("'%s' is not a supported encoder mechanism" % encoder['mechanism'])

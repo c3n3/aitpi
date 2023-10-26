@@ -1,12 +1,12 @@
 from genericpath import isdir
-from aitpi.message import *
-from aitpi.mirrored_json import MirroredJson
-from aitpi import router
-from aitpi.folder_watch import FolderWatch
+from .message import *
+from .mirrored_json import MirroredJson
+from . import router
+from .folder_watch import FolderWatch
 import os
 import time
 
-from aitpi.printer import Printer
+from .printer import Printer
 
 class CommandRegistry():
     """ Represents a 'registry' of all commands that the user can execute

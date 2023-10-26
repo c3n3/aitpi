@@ -1,4 +1,4 @@
-from aitpi.printer import Printer
+from .printer import Printer
 class Consumer():
     """The simplest consumer class
     """

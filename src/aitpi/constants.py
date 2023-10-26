@@ -1,0 +1,4 @@
+BUTTON_PRESS       = '1'
+BUTTON_RELEASE     = '0'
+ENCODER_LEFT        = 'LEFT'
+ENCODER_RIGHT       = 'RIGHT'

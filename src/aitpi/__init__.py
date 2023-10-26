@@ -1,13 +1,14 @@
 from setuptools import Command
-from aitpi.message import CleanUp
-from aitpi.printer import Printer
-from aitpi import router
-from aitpi.command_registry import CommandRegistry
-from aitpi.input_converter import InputConverter
-from aitpi.message import *
-from aitpi.printer import Printer
-from aitpi.input_initializer import TerminalKeyInput
-from aitpi.input_initializer import *
+from .message import CleanUp
+from .printer import Printer
+from . import router
+from .command_registry import CommandRegistry
+from .input_converter import InputConverter
+from .message import *
+from .printer import Printer
+from .input_initializer import TerminalKeyInput
+from .input_initializer import *
+from .constants import *
 
 _initRegistry = False
 

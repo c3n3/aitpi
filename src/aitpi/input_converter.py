@@ -1,9 +1,9 @@
-from aitpi.input_initializer import InputInitializer
-from aitpi.mirrored_json import MirroredJson
-from aitpi.message import *
-from aitpi.command_registry import CommandRegistry
-from aitpi import router
-from aitpi.printer import Printer
+from .input_initializer import InputInitializer
+from .mirrored_json import MirroredJson
+from .message import *
+from .command_registry import CommandRegistry
+from . import router
+from .printer import Printer
 
 class InputConverter():
     """Handles the map of input_unit buttons to commands, and sends messages accordingly

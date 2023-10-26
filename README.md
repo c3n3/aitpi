@@ -140,8 +140,6 @@ All commands added will be deleted and reloaded upon program startup.
 
 # import the base aitpi
 import aitpi
-
-# The postal service allows us to receive messages
 from aitpi import router
 
 # In order to receive messages can either make an object with a consume(message) function

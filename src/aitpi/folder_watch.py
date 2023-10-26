@@ -1,10 +1,10 @@
 import time
-from aitpi.printer import Printer
+from .printer import Printer
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
-from aitpi import router
-from aitpi.message import FolderMessage
-from aitpi.message import Message
+from . import router
+from .message import FolderMessage
+from .message import Message
 
 class FolderWatch():
     watchers = []

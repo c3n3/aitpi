@@ -1,6 +1,6 @@
 import json
 import os
-from aitpi.printer import Printer
+from .printer import Printer
 
 class MirroredJson():
     """ Tries its best to mimick a json file, and reflect changes in file upon saving.
