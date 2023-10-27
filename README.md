@@ -152,8 +152,8 @@ class Watcher():
 
 watcher = Watcher()
 
-# Here we add a consumer that will receive commands with ids 0,1,2,3,4, these ids are the sameconsume
-# as defined in your registry json file.consume
+# Here we add a consumer that will receive commands with ids 0,1,2,3,4, these ids are the same
+# as defined in your registry json file
 router.addConsumer([0,1,2,3,4], watcher)
 
 # We must first initialize our command registry before we can start getting input

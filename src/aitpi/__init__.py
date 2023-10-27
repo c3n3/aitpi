@@ -9,6 +9,7 @@ from .printer import Printer
 from .input_initializer import TerminalKeyInput
 from .input_initializer import *
 from .constants import *
+from .input_unit import InputUnit
 
 _initRegistry = False
 
@@ -97,14 +98,14 @@ def removeCommandFromRegistry(registryFile, command):
         if (registry.regFile == registryFile):
             registry.removeCommand(command)
 
-def changeInputRegLink(inputName, regLink):
+def changeInputRegLink(nameOrTrigger, regLink):
     """ Changes the reg link of an input unit
 
     Args:
-        inputName (string): The input unit name
+        nameOrTrigger (string): The input unit name, or trigger string
         regLink (string): The new link to a command registry
     """
-    InputConverter.change(inputName, regLink)
+    InputConverter.change(nameOrTrigger, regLink)
 
 def getFolderedCommands(foldersFile, folderedName):
     """[summary]
@@ -150,3 +151,36 @@ def getInputsByType(T):
         if input['type'] == T:
             ret.append(input)
     return ret
+
+def addInput(trigger, name="", inputType="button", mechanism="key_interrupt"):
+    """ Adds an input to the list of possible inputs
+
+    Args:
+        trigger (string): The input trigger
+        name (string): The name of the input (optional)
+        inputType (string): The type of the input
+        mechanism (string): The mechanism of the input
+    """
+    input_unit = InputUnit({
+        "trigger": trigger
+    })
+    if (name != ""):
+        input_unit['name']: name
+
+    InputConverter.addInput(input_unit)
+
+def removeInput(nameOrTrigger):
+    """ Remove an input from the inputs list
+
+    Args:
+        nameOrTrigger (string): The name or trigger string of the input
+    """
+    InputConverter.removeInput(nameOrTrigger)
+
+def recordKeyCombo():
+    """ Records a new keyboard combonation for key_interrupt input
+
+    Returns:
+        string: A string signifying the key combo
+    """
+    pass
