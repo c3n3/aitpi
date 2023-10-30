@@ -70,8 +70,9 @@ class MirroredJson():
     def save(self):
         """Saves self to mirrord json file
         """
-        f = open(self.file,'w')
-        f.write(json.dumps(self._settings, indent=4))
+        if (self.file is not None):
+            f = open(self.file,'w')
+            f.write(json.dumps(self._settings, indent=4))
 
     def load(self):
         """Loads from mirrored json file
@@ -79,6 +80,8 @@ class MirroredJson():
         Returns:
             bool: True if succeeds, false otherwise
         """
+        if (self.file is None):
+            return False
         if os.path.isfile(self.file):
             f = open(self.file,'r')
             self._settings = json.load(f)
