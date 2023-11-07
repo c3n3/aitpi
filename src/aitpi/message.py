@@ -14,8 +14,9 @@ class CommandRegistryCommand(Message):
     """ Sent to command library
     """
     msgId = -1002
-    def __init__(self, data, action, type):
-        super().__init__(data)
+    def __init__(self, id, name, action, type):
+        self.name = name
+        self.id = id
         self.event = action
         self.type = type
 

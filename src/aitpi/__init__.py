@@ -49,7 +49,7 @@ def takeInput(input):
     """
     TerminalKeyInput.takeInput(input)
 
-def addCommandToRegistry(registryFile, command, id, type, inputType):
+def addCommandToRegistry(registryFile, command, id, inputType):
     """ Adds a command to the registry
 
     Args:
@@ -61,7 +61,7 @@ def addCommandToRegistry(registryFile, command, id, type, inputType):
     """
     for registry in CommandRegistry._registries:
         if (registry.regFile == registryFile):
-            registry.addCommand(command, id, type, inputType)
+            registry.addCommand(command, id, inputType)
 
 def clearCommandTypeInRegistry(registryFile, type):
     """ Clears all commands from a 'type' in a registry
@@ -98,14 +98,14 @@ def removeCommandFromRegistry(registryFile, command):
         if (registry.regFile == registryFile):
             registry.removeCommand(command)
 
-def changeInputRegLink(nameOrTrigger, regLink):
+def changeInputRegLink(nameOrTrigger, commandId, commandName):
     """ Changes the reg link of an input unit
 
     Args:
         nameOrTrigger (string): The input unit name, or trigger string
         regLink (string): The new link to a command registry
     """
-    InputConverter.change(nameOrTrigger, regLink)
+    InputConverter.change(nameOrTrigger, commandId, commandName)
 
 def getFolderedCommands(foldersFile, folderedName):
     """[summary]
@@ -124,10 +124,10 @@ def getCommandsByInputType(inputType):
             ret.append(command)
     return ret
 
-def getCommandsByType(T):
+def getCommandsById(T):
     ret = []
     for registry in CommandRegistry._registries:
-        ret.extend(registry.getCommandsByType(T))
+        ret.extend(registry.getCommandsById(T))
     return ret
 
 def getCommands():
@@ -184,3 +184,9 @@ def recordKeyCombo():
         string: A string signifying the key combo
     """
     pass
+
+def pyqt6KeyEvent(event):
+    """ Takes in key events from pyqt6 for seemless integration
+    """
+    print(dir(event))
+    print(event.type)

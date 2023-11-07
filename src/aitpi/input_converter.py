@@ -18,6 +18,18 @@ class InputConverter():
         raise "Static class"
 
     @staticmethod
+    def toRegLink(commandId, commandName):
+        return f"{commandId}::{commandName}"
+
+    @staticmethod
+    def toCommand(regLink):
+        s = regLink.split("::")
+        if len(s) != 2:
+            Printer.print(f"Invalid registry link '{regLink}'", Printer.ERROR)
+            return ("", "")
+        return (s[0], s[1])
+
+    @staticmethod
     def getMap():
         """Returns the map of input_unit
 
@@ -27,7 +39,7 @@ class InputConverter():
         return InputConverter._inputUnits
 
     @staticmethod
-    def change(input_unit, command):
+    def change(input_unit, id, command):
         """Called to change a input_unit's mapped command
 
         Args:
@@ -43,15 +55,17 @@ class InputConverter():
         if (itemIndex == -1):
             Printer.print("Invalid input_unit {}".format(input_unit))
             return
-        if (not CommandRegistry.contains(command)):
-            Printer.print("Invalid command '{}'".format(command))
+        if (not CommandRegistry.contains(id, command)):
+            Printer.print("Invalid command '{}::{}'".format(id, command))
             return
-        t1 = InputConverter._inputUnits[itemIndex]['type']
-        t2 = CommandRegistry.getCommand(command)['input_type']
+        print(InputConverter._inputUnits[itemIndex])
+        unit = InputUnit(InputConverter._inputUnits[itemIndex])
+        t1 = unit['type']
+        t2 = CommandRegistry.getCommand(id, command)['input_type']
         if (t1 != t2):
             Printer.print("Changing to mismatch input type '%s' '%s'" % (t1, t2), Printer.WARNING)
 
-        InputConverter._inputUnits[itemIndex]['reg_link'] = command
+        InputConverter._inputUnits[itemIndex]['reg_link'] = InputConverter.toRegLink(id, command)
         InputConverter._inputUnits.save()
 
     @staticmethod
@@ -78,6 +92,7 @@ class InputConverter():
             msg (str): The message containing the input_unit number
         """
         input_unit = str(msg.data)
+        print("something happened", msg)
         i = InputConverter.getIndex(input_unit)
         if (i == -1):
             i = InputConverter.getIndex(input_unit, 'trigger')
@@ -85,9 +100,11 @@ class InputConverter():
             t = 'button'
             if ('type' in InputConverter._inputUnits[i]):
                 t = InputConverter._inputUnits[i]['type']
+            id, command = InputConverter.toCommand(InputConverter._inputUnits[i]['reg_link'])
             router.sendMessage(
                 CommandRegistryCommand(
-                    InputConverter._inputUnits[i]['reg_link'],
+                    id,
+                    command,
                     msg.event,
                     t))
         else:
@@ -153,7 +170,8 @@ class InputConverter():
                     InputConverter._uniqueList.append(input_unit['trigger'])
                 else:
                     Printer.print("'%s' type not supported" % input_unit['type'], Printer.ERROR)
-            if (not CommandRegistry.contains(input_unit['reg_link'])
+            id, c = InputConverter.toCommand(input_unit['reg_link'])
+            if (not CommandRegistry.contains(id, c)
                 and input_unit['reg_link'] != ''):
                 Printer.print("Found invalid input_unit command '{}', removing...".format(input_unit['reg_link']))
                 InputConverter._inputUnits[index]['reg_link'] = ''

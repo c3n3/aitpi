@@ -136,3 +136,18 @@ class MirroredJson():
                 return index, item
             index += 1
         return -1, None
+
+    def findByMultiProperties(self, values):
+        index = 0
+        for item in self._settings:
+            found = True
+            for value in values:
+                if type(item) is not dict:
+                    found = False
+                if item[value[0]] != value[1]:
+                    found = False
+                    break
+            if found:
+                return index, item
+            index += 1
+        return -1, None

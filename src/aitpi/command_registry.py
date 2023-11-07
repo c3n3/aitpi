@@ -62,7 +62,7 @@ class CommandRegistry():
                 return
             # Clear out all old commands
             # We assume the folder has changed entirely
-            commands = self.getCommandsByType(item['type'])
+            commands = self.getCommandsById(item['id'])
             index = 0
             for command in commands:
                 if 'path' in command:
@@ -85,7 +85,13 @@ class CommandRegistry():
                 os.system("mkdir {}".format(folder['path']))
                 time.sleep(0.1)
             try:
-                if (int(folder['id']) < 0):
+                isint = False
+                try:
+                    int(folder['id'])
+                    isint = True
+                except:
+                    pass
+                if (isint and int(folder['id']) < 0):
                     Printer.print("Message ID below zero for '%s'" % folder['path'], Printer.WARNING)
                     Printer.print("- Unsupported behavior, negative numbers reserved for AITPI.", Printer.WARNING)
                 else:
@@ -96,19 +102,19 @@ class CommandRegistry():
             # Add watch to every folder
 
     @staticmethod
-    def contains(command):
+    def contains(id, command):
         """ Returns whether the command exists in this registry
         """
-        if (CommandRegistry.getCommand(command) == None):
+        if (CommandRegistry.getCommand(id, command) == None):
             return False
         return True
 
     @staticmethod
-    def getCommand(command):
+    def getCommand(id, command):
         for registry in CommandRegistry._registries:
-            index, command = registry._commands.findByProperty(command)
-            if command:
-                return command
+            index, c = registry._commands.findByMultiProperties([('id', id), ('name', command)])
+            if c is not None:
+                return c
         return None
 
     @staticmethod
@@ -138,7 +144,7 @@ class CommandRegistry():
         commandsToClean = []
         index = 0
         for command in self._commands:
-            if command['type'] == item['type']:
+            if command['id'] == item['id']:
                 self._commands.remove(command)
 
         # Add all the files to the registry
@@ -152,7 +158,6 @@ class CommandRegistry():
                 val['id'] = msgId
                 val['input_type'] = item['input_type']
                 val['path'] = folder
-                val['type'] = item['type']
                 val['name'] = name
                 self._commands.append(val)
         # Update the mirrored json
@@ -166,7 +171,7 @@ class CommandRegistry():
         """
         return self._commands
 
-    def getCommandsByType(self, T):
+    def getCommandsById(self, id):
         """ Gets a list of commands by type
 
         Returns:
@@ -174,11 +179,11 @@ class CommandRegistry():
         """
         ret = []
         for command in self._commands:
-            if command['type'] == T:
+            if command['id'] == id:
                 ret.append(command)
         return ret
 
-    def getTypes(self):
+    def getIds(self):
         """ Returns all types in the registry
 
         Returns:
@@ -186,11 +191,11 @@ class CommandRegistry():
         """
         ret = []
         for command in self._commands:
-            if command['type'] not in ret:
+            if command['id'] not in ret:
                 ret.append(command['type'])
         return ret
 
-    def addCommand(self, name, messageID, T, inputType):
+    def addCommand(self, name, messageID, inputType):
         """ Adds a command to the library
 
         Args:
@@ -204,7 +209,7 @@ class CommandRegistry():
             Printer.print("Cannot add '{}', duplicate name".format(name))
             return False
         else:
-            self._commands.append({ "id": messageID, "input_type": inputType, 'type': T, 'name': name})
+            self._commands.append({ "id": messageID, "input_type": inputType, 'name': name})
         self.save()
         return True
 
@@ -257,15 +262,14 @@ class CommandRegistry():
         Args:
             command (unknown): Some data that will be sent
         """
-        command = msg.data
         action = msg.event
         type = msg.type
-        index, command = self._commands.findByProperty(command)
+        idx, command = self._commands.findByMultiProperties([('id', msg.id), ('name', msg.name)])
         if (command is not None):
             if (command['input_type'] != type):
                 Printer.print("Mismatched input_type for command '%s'" % command['name'], Printer.WARNING)
             msg = InputMessage(command['name'], action, command)
-            msg.msgId = int(command['id'])
+            msg.msgId = command['id']
             router.sendMessage(msg)
             return
 
