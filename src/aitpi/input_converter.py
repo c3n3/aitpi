@@ -92,7 +92,6 @@ class InputConverter():
             msg (str): The message containing the input_unit number
         """
         input_unit = str(msg.data)
-        print("something happened", msg)
         i = InputConverter.getIndex(input_unit)
         if (i == -1):
             i = InputConverter.getIndex(input_unit, 'trigger')

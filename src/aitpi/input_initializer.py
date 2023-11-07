@@ -44,7 +44,6 @@ class TerminalKeyInput():
             key (Key): A key object defined by pynput
         """
         # We are not guaranteed a char input, NOTE: Maybe we need to support non char keys?
-        print("another thing")
         if (hasattr(key, 'char')):
             TerminalKeyInput.handleInterrupt(key.char, "1")
         else:
@@ -52,8 +51,7 @@ class TerminalKeyInput():
 
         for h in TerminalKeyInput._hotkeys:
             h.press(TerminalKeyInput._listener.canonical(key))
-            print(h._state)
-            print(h._keys)
+
     @staticmethod
     def onRelease(key):
         """ Callback for releasing a key
@@ -78,6 +76,7 @@ class TerminalKeyInput():
         """
         ints = TerminalKeyInput._keyInterrupts
         if (keyString in ints):
+            print("found interrupt")
             val = ints[keyString]
             if ("_button_" in val):
                 val = ints[keyString].replace("_button_", "")

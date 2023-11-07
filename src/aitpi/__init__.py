@@ -10,6 +10,7 @@ from .input_initializer import TerminalKeyInput
 from .input_initializer import *
 from .constants import *
 from .input_unit import InputUnit
+from . import pyqt6_key_map
 
 _initRegistry = False
 
@@ -188,5 +189,4 @@ def recordKeyCombo():
 def pyqt6KeyEvent(event):
     """ Takes in key events from pyqt6 for seemless integration
     """
-    print(dir(event))
-    print(event.type)
+    print(pyqt6_key_map.pyqt6Map[event.key()])
