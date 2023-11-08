@@ -54,6 +54,12 @@ class CommandRegistry():
                 self.reloadFolder(self._foldersForCommands[folder]['path'])
         CommandRegistry._registries.append(self)
 
+    def __str__(self):
+        return str(self._commands.file)
+
+    def __repr__(self):
+        return str(self)
+
     def cleanAllFolderCommands(self):
         """ Removes all folderd commands from the json file
         """
