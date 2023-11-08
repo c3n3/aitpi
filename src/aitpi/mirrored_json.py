@@ -67,6 +67,15 @@ class MirroredJson():
         if self.autosave:
             self.save()
 
+    def __delitem__(self, index):
+        """Deletes the item at the index
+
+        Args:
+            index (int): Item index
+        """
+        del self._settings[index]
+        self.save()
+
     def save(self):
         """Saves self to mirrord json file
         """

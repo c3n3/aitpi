@@ -33,8 +33,10 @@ class TerminalKeyInput():
         """
         if (button['trigger'] in TerminalKeyInput._keys):
             Printer.print("Duplicate trigger '%s', ignoring" % button['trigger'])
-            return
+            return False
         TerminalKeyInput._keys[button['trigger']] = "_button_{}".format(button['name'])
+        print("Success")
+        return True
 
     @staticmethod
     def onPress(key):
@@ -134,7 +136,7 @@ class TerminalKeyInput():
         # Make sure we have do not have duplicate keys anywhere:
         if (key['trigger'] in TerminalKeyInput._keyInterrupts):
             Printer.print("Duplicate trigger '%s', ignoring" % key['trigger'])
-            return
+            return False
         TerminalKeyInput._keyInterrupts[key['trigger']] = "_button_{}".format(key['name'])
 
         if (len(key['trigger']) > 1):
@@ -145,6 +147,7 @@ class TerminalKeyInput():
             except Exception as e:
                 # TODO: Do we want to handle this somehow?
                 pass
+        return True
 
     @staticmethod
     def registerEncoderInterrupt(encoder):
@@ -163,14 +166,33 @@ class TerminalKeyInput():
         # Make sure we have do not have duplicate keys anywhere:
         if (encoder['left_trigger'] in TerminalKeyInput._keyInterrupts):
             Printer.print("Duplicate trigger '%s', ignoring encoder" % (encoder['left_trigger']))
-            return
+            return False
         if (encoder['right_trigger'] in TerminalKeyInput._keyInterrupts):
             Printer.print("Duplicate trigger '%s', ignoring encoder" % (encoder['right_trigger']))
-            return
+            return False
 
         # TODO: Add hotkey support to this
         TerminalKeyInput._keyInterrupts[encoder['right_trigger']] = "_right_{}".format(encoder['name'])
         TerminalKeyInput._keyInterrupts[encoder['left_trigger']] = "_left_{}".format(encoder['name'])
+
+        if (len(encoder['left_trigger']) > 1):
+            from pynput import keyboard
+            try:
+                keys = keyboard.HotKey.parse(encoder['left_trigger'])
+                TerminalKeyInput._hotkeys.append(keyboard.HotKey(keys, TerminalKeyInput.generateHotKeyPressInterruptFun(encoder['left_trigger'])))
+            except Exception as e:
+                # TODO: Do we want to handle this somehow?
+                pass
+
+        if (len(encoder['right_trigger']) > 1):
+            from pynput import keyboard
+            try:
+                keys = keyboard.HotKey.parse(encoder['right_trigger'])
+                TerminalKeyInput._hotkeys.append(keyboard.HotKey(keys, TerminalKeyInput.generateHotKeyPressInterruptFun(encoder['right_trigger'])))
+            except Exception as e:
+                # TODO: Do we want to handle this somehow?
+                pass
+        return True
 
     @staticmethod
     def initEncoder(encoder):
@@ -181,12 +203,13 @@ class TerminalKeyInput():
         """
         if (encoder['left_trigger'] in TerminalKeyInput._keys):
             Printer.print("Duplicate trigger '%s', ignoring" % encoder['left_trigger'])
-            return
+            return False
         if (encoder['right_trigger'] in TerminalKeyInput._keys):
             Printer.print("Duplicate trigger '%s', ignoring" % encoder['right_trigger'])
-            return
+            return False
         TerminalKeyInput._keys[encoder['left_trigger']] = "_left_{}".format(encoder['name'])
         TerminalKeyInput._keys[encoder['right_trigger']] = "_right_{}".format(encoder['name'])
+        return True
 
     @staticmethod
     def takeInput(str):
@@ -263,11 +286,12 @@ class InputInitializer():
         if (type(inputUnit) != InputUnit):
             inputUnit = InputUnit(inputUnit)
         if (inputUnit['type'] == 'button'):
-            InputInitializer.initButton(inputUnit)
+            return InputInitializer.initButton(inputUnit)
         elif (inputUnit['type'] == 'encoder'):
-            InputInitializer.initEncoder(inputUnit)
+            return InputInitializer.initEncoder(inputUnit)
         else:
             Printer.print("'%s' is not a supported type" % inputUnit['type'])
+        return False
 
     @staticmethod
     def removeInput(inputUnit):
@@ -294,9 +318,9 @@ class InputInitializer():
         """
         # Default to key_interrupt
         if (button['mechanism'] == 'key_input'):
-            TerminalKeyInput.initKey(button)
+            return TerminalKeyInput.initKey(button)
         elif (button['mechanism'] == 'key_interrupt'):
-            TerminalKeyInput.registerKeyInterrupt(button)
+            return TerminalKeyInput.registerKeyInterrupt(button)
         elif (button['mechanism'] == 'rpi_gpio'):
             if (not InputInitializer._importedPI):
                 from .pi_input_initializer import PiButton
@@ -304,6 +328,8 @@ class InputInitializer():
             PiButton(button)
         else:
             Printer.print("'%s' is not a supported button mechanism" % button['mechanism'])
+            return False
+        return True
 
     @staticmethod
     def initEncoder(encoder):
@@ -314,9 +340,9 @@ class InputInitializer():
         """
         # Default to key_interrupt
         if (encoder['mechanism'] == 'key_input'):
-            TerminalKeyInput.initEncoder(encoder)
+            return TerminalKeyInput.initEncoder(encoder)
         elif (encoder['mechanism'] == 'key_interrupt'):
-            TerminalKeyInput.registerEncoderInterrupt(encoder)
+            return TerminalKeyInput.registerEncoderInterrupt(encoder)
         elif (encoder['mechanism'] == 'rpi_gpio'):
             if (not InputInitializer._importedPI):
                 from .pi_input_initializer import PiEncoder
@@ -324,3 +350,5 @@ class InputInitializer():
             PiEncoder(encoder)
         else:
             Printer.print("'%s' is not a supported encoder mechanism" % encoder['mechanism'])
+            return False
+        return True

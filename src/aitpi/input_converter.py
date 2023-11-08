@@ -51,8 +51,16 @@ class InputConverter():
             command (str): The command to change to
         """
         Printer.print("Setting {} to {}".format(input_unit, command))
-
-        itemIndex = InputConverter.getIndex(input_unit)
+        valid = False
+        if type(input_unit) == dict or type(input_unit) == InputUnit:
+            if 'left_trigger' in input_unit:
+                itemIndex = InputConverter.getIndex(input_unit['left_trigger'], key='left_trigger')
+                valid = InputConverter.getIndex(input_unit['right_trigger'], key='right_trigger') == itemIndex and itemIndex != -1
+            elif 'trigger' in input_unit:
+                itemIndex = InputConverter.getIndex(input_unit['trigger'], key='trigger')
+                valid = itemIndex != -1
+        if not valid: 
+            itemIndex = InputConverter.getIndex(input_unit)
         isClearing = id == '' and command == ''
         if (itemIndex == -1):
             itemIndex = InputConverter.getIndex(input_unit, key='trigger')
@@ -63,12 +71,11 @@ class InputConverter():
             if (not CommandRegistry.contains(id, command)):
                 Printer.print("Invalid command '{}::{}'".format(id, command))
                 return
-            print(InputConverter._inputUnits[itemIndex])
             unit = InputUnit(InputConverter._inputUnits[itemIndex])
             t1 = unit['type']
             t2 = CommandRegistry.getCommand(id, command)['input_type']
             if (t1 != t2):
-                Printer.print("Changing to mismatch input type '%s' '%s'" % (t1, t2), Printer.WARNING)
+                Printer.print("Changing to mismatch input type '%s' '%s' %s" % (t1, t2, unit), Printer.WARNING)
 
         InputConverter._inputUnits[itemIndex]['reg_link'] = InputConverter.toRegLink(id, command)
         InputConverter._inputUnits.save()
@@ -100,6 +107,10 @@ class InputConverter():
         i = InputConverter.getIndex(input_unit)
         if (i == -1):
             i = InputConverter.getIndex(input_unit, 'trigger')
+        if (i == -1):
+            i = InputConverter.getIndex(input_unit, 'left_trigger')
+        if (i == -1):
+            i = InputConverter.getIndex(input_unit, 'right_trigger')
         if (i != -1):
             t = 'button'
             if ('type' in InputConverter._inputUnits[i]):
@@ -127,7 +138,8 @@ class InputConverter():
                 return
         if ('reg_link' not in input_unit):
             input_unit['reg_link'] = ''
-        if (not CommandRegistry.contains(input_unit['reg_link'])
+        cmd = InputConverter.toCommand(input_unit['reg_link'])
+        if (not CommandRegistry.contains(cmd[0], cmd[1])
             and input_unit['reg_link'] != ''):
             Printer.print("Found invalid input_unit command '{}', removing...".format(input_unit['reg_link']))
             input_unit['reg_link'] = ''
@@ -136,12 +148,14 @@ class InputConverter():
             Printer.print("Duplicate name '{}', Not adding.".format(input_unit['name']), Printer.ERROR)
             return
 
+        result = InputInitializer.initInput(input_unit)
+        if not result:
+            return
         if (type(input_unit) ==  InputUnit):
             InputConverter._inputUnits.append(input_unit.getValue())
         else:
             InputConverter._inputUnits.append(input_unit)
         InputConverter._inputUnits.save()
-        InputInitializer.initInput(input_unit)
 
     @staticmethod
     def removeInput(nameOrTrigger):
@@ -151,10 +165,10 @@ class InputConverter():
         if (index == -1):
             return
 
-        input_unit = InputConverter._inputUnits[index]
+        input_unit = InputUnit(InputConverter._inputUnits[index])
 
         if (InputInitializer.removeInput(input_unit)):
-            InputConverter._inputUnits.remove(input_unit)
+            del InputConverter._inputUnits[index]
 
     @staticmethod
     def init(file):

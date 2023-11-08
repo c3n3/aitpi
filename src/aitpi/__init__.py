@@ -153,7 +153,7 @@ def getInputsByType(T):
             ret.append(input)
     return ret
 
-def addInput(trigger, name="", inputType="button", mechanism="key_interrupt"):
+def addInput(inputUnit):
     """ Adds an input to the list of possible inputs
 
     Args:
@@ -162,13 +162,9 @@ def addInput(trigger, name="", inputType="button", mechanism="key_interrupt"):
         inputType (string): The type of the input
         mechanism (string): The mechanism of the input
     """
-    input_unit = InputUnit({
-        "trigger": trigger
-    })
-    if (name != ""):
-        input_unit['name']: name
-
-    InputConverter.addInput(input_unit)
+    if type(inputUnit) != InputUnit:
+        inputUnit = InputUnit(inputUnit)
+    InputConverter.addInput(inputUnit)
 
 def removeInput(nameOrTrigger):
     """ Remove an input from the inputs list
