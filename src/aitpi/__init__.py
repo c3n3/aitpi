@@ -186,7 +186,12 @@ def recordKeyCombo():
     """
     pass
 
-def pyqt6KeyEvent(event):
+def pyqt6KeyPressEvent(event):
     """ Takes in key events from pyqt6 for seemless integration
     """
-    print(pyqt6_key_map.pyqt6Map[event.key()])
+    input_initializer.TerminalKeyInput.onPress(pyqt6_key_map.pyqt6Map[event.key()])
+
+def pyqt6KeyReleaseEvent(event):
+    """ Takes in key events from pyqt6 for seemless integration
+    """
+    input_initializer.TerminalKeyInput.onRelease(pyqt6_key_map.pyqt6Map[event.key()])

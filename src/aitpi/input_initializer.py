@@ -76,7 +76,6 @@ class TerminalKeyInput():
         """
         ints = TerminalKeyInput._keyInterrupts
         if (keyString in ints):
-            print("found interrupt")
             val = ints[keyString]
             if ("_button_" in val):
                 val = ints[keyString].replace("_button_", "")

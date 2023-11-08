@@ -19,10 +19,14 @@ class InputConverter():
 
     @staticmethod
     def toRegLink(commandId, commandName):
+        if commandId == '' and commandName == '':
+            return ''
         return f"{commandId}::{commandName}"
 
     @staticmethod
     def toCommand(regLink):
+        if regLink == '':
+            return ('', '')
         s = regLink.split("::")
         if len(s) != 2:
             Printer.print(f"Invalid registry link '{regLink}'", Printer.ERROR)
@@ -49,21 +53,22 @@ class InputConverter():
         Printer.print("Setting {} to {}".format(input_unit, command))
 
         itemIndex = InputConverter.getIndex(input_unit)
-
+        isClearing = id == '' and command == ''
         if (itemIndex == -1):
             itemIndex = InputConverter.getIndex(input_unit, key='trigger')
         if (itemIndex == -1):
             Printer.print("Invalid input_unit {}".format(input_unit))
             return
-        if (not CommandRegistry.contains(id, command)):
-            Printer.print("Invalid command '{}::{}'".format(id, command))
-            return
-        print(InputConverter._inputUnits[itemIndex])
-        unit = InputUnit(InputConverter._inputUnits[itemIndex])
-        t1 = unit['type']
-        t2 = CommandRegistry.getCommand(id, command)['input_type']
-        if (t1 != t2):
-            Printer.print("Changing to mismatch input type '%s' '%s'" % (t1, t2), Printer.WARNING)
+        if not isClearing:
+            if (not CommandRegistry.contains(id, command)):
+                Printer.print("Invalid command '{}::{}'".format(id, command))
+                return
+            print(InputConverter._inputUnits[itemIndex])
+            unit = InputUnit(InputConverter._inputUnits[itemIndex])
+            t1 = unit['type']
+            t2 = CommandRegistry.getCommand(id, command)['input_type']
+            if (t1 != t2):
+                Printer.print("Changing to mismatch input type '%s' '%s'" % (t1, t2), Printer.WARNING)
 
         InputConverter._inputUnits[itemIndex]['reg_link'] = InputConverter.toRegLink(id, command)
         InputConverter._inputUnits.save()
