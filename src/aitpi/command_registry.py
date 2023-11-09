@@ -35,7 +35,7 @@ class CommandRegistry():
         self.foldersFile = foldersJson
         self._commands = None
         self._foldersForCommands = None
-        self._commands = MirroredJson(commandRegJson)
+        self._commands = MirroredJson(commandRegJson, default=[])
         self._foldersForCommands = MirroredJson(foldersJson) if foldersJson != None else None
         router.addConsumer(
             [CommandRegistryCommand.msgId],
@@ -211,7 +211,7 @@ class CommandRegistry():
         Returns:
             [type]: True if added. False if duplicate (not added)
         """
-        if (self.contains(name)):
+        if (self.contains(messageID, name)):
             Printer.print("Cannot add '{}', duplicate name".format(name))
             return False
         else:

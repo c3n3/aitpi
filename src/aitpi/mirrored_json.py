@@ -7,7 +7,7 @@ class MirroredJson():
         Very useful for handling settings that need to be persistent
     """
 
-    def __init__(self, file, autosave=True):
+    def __init__(self, file, autosave=True, default={}):
         """ The file to mirror
 
         Args:
@@ -16,7 +16,7 @@ class MirroredJson():
         self.file = file
         self.autosave = autosave
         if (not self.load()):
-            self._settings = {}
+            self._settings = default
         self.save()
         self.type = type(self._settings)
 
@@ -136,7 +136,7 @@ class MirroredJson():
         if self.type == list:
             self._settings.append(item)
         else:
-            Printer.print('Mirror JSON is not a list', "ERROR")
+            raise Exception('Mirror JSON is not a list')
 
     def findByProperty(self, value, property='name'):
         index = 0

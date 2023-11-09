@@ -45,7 +45,7 @@ class TerminalKeyInput():
         Args:
             key (Key): A key object defined by pynput
         """
-        # We are not guaranteed a char input, NOTE: Maybe we need to support non char keys?
+
         if (hasattr(key, 'char')):
             TerminalKeyInput.handleInterrupt(key.char, "1")
         else:
@@ -83,19 +83,22 @@ class TerminalKeyInput():
                 val = ints[keyString].replace("_button_", "")
                 if val == "":
                     val = keyString
-                router.sendMessage(InputCommand(val, action))
+                if action == "0" or action == 0:
+                    router.sendMessage(InputCommand(val, constants.BUTTON_RELEASE))
+                else:
+                    router.sendMessage(InputCommand(val, constants.BUTTON_PRESS))
             # We only care about up presses for encoders
             # NOTE: This seems really minor and natural, but could be configurable with the json
             elif("_left_" in val and action == "1"):
                 val = val.replace("_left_", "")
                 if val == "":
                     val = keyString
-                router.sendMessage(InputCommand(val, "LEFT"))
+                router.sendMessage(InputCommand(val, constants.ENCODER_LEFT))
             elif("_right_" in val and action == "1"):
                 val = val.replace("_right_", "")
                 if val == "":
                     val = keyString
-                router.sendMessage(InputCommand(val, "RIGHT"))
+                router.sendMessage(InputCommand(val, constants.ENCODER_RIGHT))
 
     @staticmethod
     def generateHotKeyPressInterruptFun(key):
