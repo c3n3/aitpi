@@ -9,7 +9,7 @@ class Watch():
     def __init__(self) -> None:
         Watch.watchall = []
         self.calls = []
-    
+
     def consume(self, msg):
         print("Consume")
         self.calls.append(msg)

@@ -88,7 +88,7 @@ class PiEncoder():
 class PiButton():
     """ Handles initalization and interrupt handling of pi buttons
     """
-    
+
     BUTTON_BOUNCE = 25 # ms
 
     # Change these to UP DOWN or whatever you want

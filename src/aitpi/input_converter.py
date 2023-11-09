@@ -59,7 +59,7 @@ class InputConverter():
             elif 'trigger' in input_unit:
                 itemIndex = InputConverter.getIndex(input_unit['trigger'], key='trigger')
                 valid = itemIndex != -1
-        if not valid: 
+        if not valid:
             itemIndex = InputConverter.getIndex(input_unit)
         isClearing = id == '' and command == ''
         if (itemIndex == -1):
@@ -158,16 +158,27 @@ class InputConverter():
         InputConverter._inputUnits.save()
 
     @staticmethod
-    def removeInput(nameOrTrigger):
-        index = InputConverter.getIndex(nameOrTrigger, 'trigger')
+    def removeInput(inputUnit):
+        trigger = inputUnit
+        name = inputUnit
+        triggerType = 'trigger'
+        if type(inputUnit) != str:
+            if 'trigger' in inputUnit:
+                trigger = inputUnit['trigger']
+            elif 'left_trigger' in inputUnit:
+                trigger = inputUnit['left_trigger']
+                triggerType = 'left_trigger'
+
+        index = InputConverter.getIndex(name, 'name')
         if (index == -1):
-            index = InputConverter.getIndex(nameOrTrigger, 'name')
+            index = InputConverter.getIndex(trigger, triggerType)
+
         if (index == -1):
             return
 
-        input_unit = InputUnit(InputConverter._inputUnits[index])
+        inputUnit = InputUnit(InputConverter._inputUnits[index])
 
-        if (InputInitializer.removeInput(input_unit)):
+        if (InputInitializer.removeInput(inputUnit)):
             del InputConverter._inputUnits[index]
 
     @staticmethod
@@ -175,10 +186,10 @@ class InputConverter():
         """Initializes all the input mechanisms
 
         Args:
-            file (string): The string 
+            file (string): The string
         """
         router.addConsumer([InputCommand.msgId], InputConverter)
-        InputConverter._inputUnits = MirroredJson(file)
+        InputConverter._inputUnits = MirroredJson(file, default=[])
         for index, input_unit in enumerate(InputConverter._inputUnits._settings):
             if ('type' in input_unit):
                 if (input_unit['type'] == 'encoder'):
@@ -199,6 +210,9 @@ class InputConverter():
             for dup in set(InputConverter._uniqueList):
                 if (InputConverter._uniqueList.count(dup) > 1):
                     Printer.print(" '%s'" % dup)
+        count = 0
         for index, input_unit in enumerate(InputConverter._inputUnits._settings):
             InputInitializer.initInput(input_unit)
-        Printer.print("Input initialization complete!")
+            count += 1
+
+        Printer.print(f"Initialized {file} and found {count} elements")

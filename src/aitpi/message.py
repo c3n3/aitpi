@@ -43,7 +43,7 @@ class InputMessage(Message):
         self.name = name
         self.event = action
         self.attributes = attributes
-    
+
     def __str__(self) -> str:
         return f"{{ 'name': {self.name}, 'event': {self.event}, 'attributes': {self.attributes} }}"
 

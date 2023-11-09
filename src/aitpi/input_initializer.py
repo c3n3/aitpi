@@ -35,7 +35,6 @@ class TerminalKeyInput():
             Printer.print("Duplicate trigger '%s', ignoring" % button['trigger'])
             return False
         TerminalKeyInput._keys[button['trigger']] = "_button_{}".format(button['name'])
-        print("Success")
         return True
 
     @staticmethod
@@ -105,7 +104,7 @@ class TerminalKeyInput():
         """ Simply calls the normal press interrupt handler
 
         Args:
-            key (string): The hotkey string 
+            key (string): The hotkey string
         """
         def fun():
             TerminalKeyInput.onPress(key)
@@ -116,7 +115,7 @@ class TerminalKeyInput():
         """ Simply calls the normal release interrupt handler
 
         Args:
-            key (string): The hotkey string 
+            key (string): The hotkey string
         """
         def fun():
             TerminalKeyInput.onRelease(key)
@@ -154,7 +153,7 @@ class TerminalKeyInput():
 
     @staticmethod
     def registerEncoderInterrupt(encoder):
-        """ Registers a new 'encoder' for 
+        """ Registers a new 'encoder' for
 
         Args:
             encoder (Dictionary): Info about the encoder
@@ -298,7 +297,7 @@ class InputInitializer():
 
     @staticmethod
     def removeInput(inputUnit):
-        """ Removes a 'button' 
+        """ Removes a 'button'
 
         Args:
             button (Dictionary): Info about the button
@@ -314,7 +313,7 @@ class InputInitializer():
 
     @staticmethod
     def initButton(button):
-        """ Inits a 'button' 
+        """ Inits a 'button'
 
         Args:
             button (Dictionary): Info about the button

@@ -139,6 +139,17 @@ def getCommands():
     """
     return CommandRegistry.getAllCommandsGlobal()
 
+def getCommandsByRegistry(registry):
+    """ Gets all the commands from any command registry
+
+    Returns:
+        []: an array of all command names
+    """
+    for reg in CommandRegistry._registries:
+        if reg.regFile == registry:
+            return reg._commands._settings
+    return []
+
 def getInputs():
     """ Get all of the inputs from json
     """
@@ -166,13 +177,13 @@ def addInput(inputUnit):
         inputUnit = InputUnit(inputUnit)
     InputConverter.addInput(inputUnit)
 
-def removeInput(nameOrTrigger):
+def removeInput(inputUnit):
     """ Remove an input from the inputs list
 
     Args:
-        nameOrTrigger (string): The name or trigger string of the input
+        inputUnit (string): The name, trigger, or input unit of the input
     """
-    InputConverter.removeInput(nameOrTrigger)
+    InputConverter.removeInput(inputUnit)
 
 def recordKeyCombo():
     """ Records a new keyboard combonation for key_interrupt input

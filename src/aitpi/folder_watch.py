@@ -39,7 +39,7 @@ class FolderWatch():
 
 class Watcher(FileSystemEventHandler):
     def __init__(self, folder, msgId):
-        """Inits 
+        """Inits
 
         Args:
             folder ([type]): [description]
