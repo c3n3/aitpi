@@ -4,6 +4,7 @@ from . import router
 from .message import *
 from . import constants
 from .input_unit import InputUnit
+from .scheduler_thread import SchedulerThread
 
 class TerminalKeyInput():
     """Handles input from a keyboard
@@ -12,6 +13,14 @@ class TerminalKeyInput():
     # Change these to whatever you want, high is when pressed, low is when not pressed
     highValue = constants.BUTTON_PRESS
     lowValue = constants.BUTTON_RELEASE
+
+    _scheduler = SchedulerThread()
+
+    _debug = False
+
+    _willSpawnThreads = False
+
+    _pressed = set()
 
     # The keys registered for manual input
     _keys = {}
@@ -23,6 +32,19 @@ class TerminalKeyInput():
 
     # Our keyboard listener, only exists if someone uses 'key_interrupt'
     _listener = None
+
+    @staticmethod
+    def shouldSpawnThreads(should):
+        if should and not TerminalKeyInput._willSpawnThreads:
+            print("Starting")
+            TerminalKeyInput._scheduler.start()
+        elif not should and TerminalKeyInput._willSpawnThreads:
+            TerminalKeyInput._scheduler.stop(blockWait=True)
+        TerminalKeyInput._willSpawnThreads = should
+
+    @staticmethod
+    def setDebug(enable):
+        TerminalKeyInput._debug = enable
 
     @staticmethod
     def initKey(button):
@@ -53,6 +75,10 @@ class TerminalKeyInput():
         for h in TerminalKeyInput._hotkeys:
             h.press(TerminalKeyInput._listener.canonical(key))
 
+        if TerminalKeyInput._debug:
+            TerminalKeyInput._pressed.add(TerminalKeyInput._listener.canonical(key))
+            Printer.print(f"Pressed: '{key}'. State: {TerminalKeyInput._pressed}", Printer.DEBUG)
+
     @staticmethod
     def onRelease(key):
         """ Callback for releasing a key
@@ -67,6 +93,10 @@ class TerminalKeyInput():
         for h in TerminalKeyInput._hotkeys:
             h.release(TerminalKeyInput._listener.canonical(key))
 
+        if TerminalKeyInput._debug:
+            TerminalKeyInput._pressed.remove(TerminalKeyInput._listener.canonical(key))
+            Printer.print(f"Released: '{key}'. State: {TerminalKeyInput._pressed}", Printer.DEBUG)
+
     @staticmethod
     def handleInterrupt(keyString, action):
         """ Handles all the interrupt keys
@@ -76,28 +106,32 @@ class TerminalKeyInput():
             action ([type]): The event that took place to trigger this, "0" or "1"
         """
         ints = TerminalKeyInput._keyInterrupts
+        send = None
         if (keyString in ints):
             val = ints[keyString]
             if ("_button_" in val):
                 val = ints[keyString].replace("_button_", "")
                 if val == "":
                     val = keyString
-                if action == "0" or action == 0:
-                    router.sendMessage(InputCommand(val, constants.BUTTON_RELEASE))
-                else:
-                    router.sendMessage(InputCommand(val, constants.BUTTON_PRESS))
+                send = constants.BUTTON_RELEASE
+
             # We only care about up presses for encoders
             # NOTE: This seems really minor and natural, but could be configurable with the json
             elif("_left_" in val and action == "1"):
                 val = val.replace("_left_", "")
                 if val == "":
                     val = keyString
-                router.sendMessage(InputCommand(val, constants.ENCODER_LEFT))
+                send = constants.ENCODER_LEFT
             elif("_right_" in val and action == "1"):
                 val = val.replace("_right_", "")
                 if val == "":
                     val = keyString
-                router.sendMessage(InputCommand(val, constants.ENCODER_RIGHT))
+                send = constants.ENCODER_RIGHT
+            if send is not None:
+                if TerminalKeyInput._scheduler.running:
+                    TerminalKeyInput._scheduler.scheduleItem(0, lambda: router.sendMessage(InputCommand(val, send)))
+                else:
+                    router.sendMessage(InputCommand(val, send))
 
     @staticmethod
     def generateHotKeyPressInterruptFun(key):
@@ -107,18 +141,7 @@ class TerminalKeyInput():
             key (string): The hotkey string
         """
         def fun():
-            TerminalKeyInput.onPress(key)
-        return fun
-
-    @staticmethod
-    def generateHotKeyReleaseInterruptFun(key):
-        """ Simply calls the normal release interrupt handler
-
-        Args:
-            key (string): The hotkey string
-        """
-        def fun():
-            TerminalKeyInput.onRelease(key)
+            TerminalKeyInput.handleInterrupt(key, constants.BUTTON_PRESS)
         return fun
 
     @staticmethod

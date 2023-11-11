@@ -3,6 +3,7 @@ class Printer():
     """ The printer for Aitpi
     """
 
+    DEBUG = "DEBUG"
     INFO = "INFO"
     WARNING = "WARNING"
     ERROR = "ERROR"
