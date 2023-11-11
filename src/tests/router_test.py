@@ -1,4 +1,4 @@
-import aitpi
+from aitpi.src import aitpi
 import pytest
 
 class DummyMsg(aitpi.Message):

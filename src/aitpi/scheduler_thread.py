@@ -3,18 +3,17 @@ import time
 import threading
 
 class SchedulerThread():
-    def __init__(self):
+    def __init__(self, delayTime=0.1):
         self.scheduler = sched.scheduler(time.time, time.sleep)
         self.worker = threading.Thread(target=self.run)
         self.running = False
         self.shouldRun = False
+        self.delayTime = delayTime
 
     def run(self):
-        print("Run")
         while (self.shouldRun):
             self.scheduler.run()
-            print("Running")
-            time.sleep(0.5)
+            time.sleep(self.delayTime)
         self.running = False
 
     def start(self):
@@ -22,7 +21,6 @@ class SchedulerThread():
             return
         self.running = True
         self.shouldRun = True
-        print("Run")
         self.worker.start()
 
     def stop(self, blockWait=False):
