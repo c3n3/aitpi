@@ -1,6 +1,8 @@
 import sched
 import time
 import threading
+from . import router
+from . import message
 
 class SchedulerThread():
     def __init__(self, delayTime=0.1):
@@ -9,6 +11,7 @@ class SchedulerThread():
         self.running = False
         self.shouldRun = False
         self.delayTime = delayTime
+        router.addConsumer([message.CleanUp.msgId], self)
 
     def run(self):
         while (self.shouldRun):
@@ -33,3 +36,5 @@ class SchedulerThread():
     def scheduleItem(self, delay, fun, arguments=(), priority=0):
         return self.scheduler.enter(delay, priority, fun, arguments)
 
+    def consume(self, msg):
+        self.stop(True)
