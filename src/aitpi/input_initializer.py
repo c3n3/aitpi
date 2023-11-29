@@ -72,11 +72,13 @@ class TerminalKeyInput():
         else:
             TerminalKeyInput.handleInterrupt(key, "1")
 
+        can = TerminalKeyInput._listener.canonical(key)
+
         for h in TerminalKeyInput._hotkeys:
-            h.press(TerminalKeyInput._listener.canonical(key))
+            h.press(can)
 
         if TerminalKeyInput._debug:
-            TerminalKeyInput._pressed.add(TerminalKeyInput._listener.canonical(key))
+            TerminalKeyInput._pressed.add(can)
             Printer.print(f"Pressed: '{key}'. State: {TerminalKeyInput._pressed}", Printer.DEBUG)
 
     @staticmethod
@@ -90,11 +92,13 @@ class TerminalKeyInput():
         if (hasattr(key, 'char')):
             TerminalKeyInput.handleInterrupt(key.char, "0")
 
-        for h in TerminalKeyInput._hotkeys:
-            h.release(TerminalKeyInput._listener.canonical(key))
+        can = TerminalKeyInput._listener.canonical(key)
 
-        if TerminalKeyInput._debug:
-            TerminalKeyInput._pressed.remove(TerminalKeyInput._listener.canonical(key))
+        for h in TerminalKeyInput._hotkeys:
+            h.release(can)
+
+        if TerminalKeyInput._debug and can in TerminalKeyInput._pressed:
+            TerminalKeyInput._pressed.remove(can)
             Printer.print(f"Released: '{key}'. State: {TerminalKeyInput._pressed}", Printer.DEBUG)
 
     @staticmethod
@@ -113,7 +117,10 @@ class TerminalKeyInput():
                 val = ints[keyString].replace("_button_", "")
                 if val == "":
                     val = keyString
-                send = constants.BUTTON_RELEASE
+                if action == "1":
+                    send = constants.BUTTON_PRESS
+                elif action == "0":
+                    send = constants.BUTTON_RELEASE
 
             # We only care about up presses for encoders
             # NOTE: This seems really minor and natural, but could be configurable with the json
@@ -134,7 +141,7 @@ class TerminalKeyInput():
                     router.sendMessage(InputCommand(val, send))
 
     @staticmethod
-    def generateHotKeyPressInterruptFun(key):
+    def createPressFun(key):
         """ Simply calls the normal press interrupt handler
 
         Args:
@@ -142,6 +149,17 @@ class TerminalKeyInput():
         """
         def fun():
             TerminalKeyInput.handleInterrupt(key, constants.BUTTON_PRESS)
+        return fun
+
+    @staticmethod
+    def createReleaseFun(key):
+        """ Simply calls the normal press interrupt handler
+
+        Args:
+            key (string): The hotkey string
+        """
+        def fun():
+            TerminalKeyInput.handleInterrupt(key, constants.BUTTON_RELEASE)
         return fun
 
     @staticmethod
@@ -166,11 +184,15 @@ class TerminalKeyInput():
 
         if (len(key['trigger']) > 1):
             from pynput import keyboard
+            from .releasable_hotkey import ReleaseableHotkey
             try:
                 keys = keyboard.HotKey.parse(key['trigger'])
-                TerminalKeyInput._hotkeys.append(keyboard.HotKey(keys, TerminalKeyInput.generateHotKeyPressInterruptFun(key['trigger'])))
+                for i in range(len(keys)):
+                    keys[i] = TerminalKeyInput._listener.canonical(keys[i])
+                TerminalKeyInput._hotkeys.append(ReleaseableHotkey(keys, TerminalKeyInput.createPressFun(key['trigger']), TerminalKeyInput.createReleaseFun(key['trigger'])))
             except Exception as e:
                 # TODO: Do we want to handle this somehow?
+                print("this cannot be added", key)
                 pass
         return True
 
@@ -204,7 +226,7 @@ class TerminalKeyInput():
             from pynput import keyboard
             try:
                 keys = keyboard.HotKey.parse(encoder['left_trigger'])
-                TerminalKeyInput._hotkeys.append(keyboard.HotKey(keys, TerminalKeyInput.generateHotKeyPressInterruptFun(encoder['left_trigger'])))
+                TerminalKeyInput._hotkeys.append(keyboard.HotKey(keys, TerminalKeyInput.createPressFun(encoder['left_trigger'])))
             except Exception as e:
                 # TODO: Do we want to handle this somehow?
                 pass
@@ -213,7 +235,7 @@ class TerminalKeyInput():
             from pynput import keyboard
             try:
                 keys = keyboard.HotKey.parse(encoder['right_trigger'])
-                TerminalKeyInput._hotkeys.append(keyboard.HotKey(keys, TerminalKeyInput.generateHotKeyPressInterruptFun(encoder['right_trigger'])))
+                TerminalKeyInput._hotkeys.append(keyboard.HotKey(keys, TerminalKeyInput.createPressFun(encoder['right_trigger'])))
             except Exception as e:
                 # TODO: Do we want to handle this somehow?
                 pass
