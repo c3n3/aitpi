@@ -6,6 +6,8 @@ from . import constants
 from .input_unit import InputUnit
 from .scheduler_thread import SchedulerThread
 
+import time
+
 class TerminalKeyInput():
     """Handles input from a keyboard
     """
@@ -19,6 +21,8 @@ class TerminalKeyInput():
     _debug = False
 
     _willSpawnThreads = False
+
+    _clearKeys = {}
 
     _pressed = set()
 
@@ -47,6 +51,18 @@ class TerminalKeyInput():
         TerminalKeyInput._debug = enable
 
     @staticmethod
+    def scheduleKeyClear():
+        for key, time in TerminalKeyInput._clearKeys.items():
+            pass
+        TerminalKeyInput._scheduler.scheduleItem(1000, TerminalKeyInput.scheduleKeyClear, priority=-1)
+
+    @staticmethod
+    def clearKeys(enable):
+        for h in TerminalKeyInput._hotkeys:
+            h.clear()
+        TerminalKeyInput._pressed.clear()
+
+    @staticmethod
     def initKey(button):
         """ Inits a key to be recognized as valid input
 
@@ -67,12 +83,11 @@ class TerminalKeyInput():
             key (Key): A key object defined by pynput
         """
 
+        can = TerminalKeyInput._listener.canonical(key)
         if (hasattr(key, 'char')):
             TerminalKeyInput.handleInterrupt(key.char, "1")
         else:
             TerminalKeyInput.handleInterrupt(key, "1")
-
-        can = TerminalKeyInput._listener.canonical(key)
 
         for h in TerminalKeyInput._hotkeys:
             h.press(can)
@@ -89,10 +104,10 @@ class TerminalKeyInput():
             key (Key): A key object defined by pynput
         """
         # We are not guaranteed a char input, NOTE: Maybe we need to support non char keys?
-        if (hasattr(key, 'char')):
-            TerminalKeyInput.handleInterrupt(key.char, "0")
 
         can = TerminalKeyInput._listener.canonical(key)
+        if (hasattr(key, 'char')):
+            TerminalKeyInput.handleInterrupt(key.char, "0")
 
         for h in TerminalKeyInput._hotkeys:
             h.release(can)
@@ -192,7 +207,7 @@ class TerminalKeyInput():
                 TerminalKeyInput._hotkeys.append(ReleaseableHotkey(keys, TerminalKeyInput.createPressFun(key['trigger']), TerminalKeyInput.createReleaseFun(key['trigger'])))
             except Exception as e:
                 # TODO: Do we want to handle this somehow?
-                print("this cannot be added", key)
+                print("this cannot be added", key, e)
                 pass
         return True
 
@@ -226,6 +241,8 @@ class TerminalKeyInput():
             from pynput import keyboard
             try:
                 keys = keyboard.HotKey.parse(encoder['left_trigger'])
+                for i in range(len(keys)):
+                    keys[i] = TerminalKeyInput._listener.canonical(keys[i])
                 TerminalKeyInput._hotkeys.append(keyboard.HotKey(keys, TerminalKeyInput.createPressFun(encoder['left_trigger'])))
             except Exception as e:
                 # TODO: Do we want to handle this somehow?
@@ -235,6 +252,8 @@ class TerminalKeyInput():
             from pynput import keyboard
             try:
                 keys = keyboard.HotKey.parse(encoder['right_trigger'])
+                for i in range(len(keys)):
+                    keys[i] = TerminalKeyInput._listener.canonical(keys[i])
                 TerminalKeyInput._hotkeys.append(keyboard.HotKey(keys, TerminalKeyInput.createPressFun(encoder['right_trigger'])))
             except Exception as e:
                 # TODO: Do we want to handle this somehow?

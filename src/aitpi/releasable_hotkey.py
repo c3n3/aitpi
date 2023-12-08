@@ -9,6 +9,9 @@ class ReleaseableHotkey(keyboard.HotKey):
         self._on_activate = on_activate
         self._on_release = on_release
 
+    def clear(self):
+        self._state.clear()
+
     def press(self, key):
         if key in self._keys and key not in self._state:
             self._state.add(key)
