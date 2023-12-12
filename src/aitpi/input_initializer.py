@@ -306,6 +306,9 @@ class TerminalKeyInput():
         if (key['trigger'] in TerminalKeyInput._keys):
             del TerminalKeyInput._keys[key['trigger']]
 
+        if key['trigger'] in TerminalKeyInput._keyInterrupts:
+            del TerminalKeyInput._keyInterrupts[key['trigger']]
+
         for item in TerminalKeyInput._keys.keys():
             name = TerminalKeyInput.getNameString(TerminalKeyInput._keys[item])
             if (name == key['name']):
