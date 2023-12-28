@@ -1,3 +1,5 @@
+from .printer import Printer
+
 _consumers = {}
 
 def reset():
@@ -10,10 +12,12 @@ def addConsumer(ids, consumer, priority=0):
     """Adds a new consumer
 
     Args:
-        ids (list<int>): List of all IDs to recieve.
+        ids (list<Any>): List of all IDs to recieve.
         consumer (Consumer): The consumer to link
         priority (int): Higher is more priority.
     """
+    if type(ids) != list:
+        ids = [ids]
     for i in ids:
         if (not i in _consumers):
             _consumers[i] = []
@@ -26,15 +30,31 @@ def addConsumer(ids, consumer, priority=0):
         if not inserted:
             _consumers[i].append((consumer, priority))
 
-def sendMessage(msg):
+def sendMessage(msg, id=None):
     """Sends a message
 
     Args:
-        msg (Message): The message to send
+        msg (Any): The message to send
+        id (Any): The id to send to
     """
+    usingId = id
+    if id is None:
+        if type(msg) == dict:
+            if 'msgId' in msg:
+                usingId = msg['msgId']
+            else:
+                Printer.print(f"Could not find msgId on {msg}", Printer.ERROR)
+        else:
+            try:
+                usingId = msg.msgId
+            except AttributeError:
+                Printer.print(f"Could not find msgId on {msg}", Printer.ERROR)
+    if usingId is None:
+        return
+
     sent = False
-    if (msg.msgId in _consumers.keys()):
-        for c in _consumers[msg.msgId]:
+    if (usingId in _consumers.keys()):
+        for c in _consumers[usingId]:
             # If there is no consume function, assume callable
             if 'consume' in dir(c[0]):
                 c[0].consume(msg)
@@ -43,5 +63,5 @@ def sendMessage(msg):
             sent = True
     return sent
 
-def send(msg):
-    sendMessage(msg)
+def send(id, msg):
+    return sendMessage(msg, id)
