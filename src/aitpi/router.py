@@ -8,6 +8,21 @@ def reset():
     global _consumers
     _consumers = {}
 
+def removeConsumer(ids, consumer):
+    """Delete a consumer
+    """
+    global _consumers
+    if type(ids) != list:
+        ids = [ids]
+    for id in ids:
+        if id in _consumers:
+            for i in  range(len(_consumers[id])):
+                consumer, priority = _consumers[id][i]
+                if consumer == consumer:
+                    del _consumers[id][i]
+                    break
+
+
 def addConsumer(ids, consumer, priority=0):
     """Adds a new consumer
 

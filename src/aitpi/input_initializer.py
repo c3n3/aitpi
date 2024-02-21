@@ -64,12 +64,8 @@ class TerminalKeyInput():
 
     @staticmethod
     def removeKeyHandler(fun):
-        idx = -1
-        for item in TerminalKeyInput._keyHandlers:
-            if item == fun:
-                break
-        if idx != -1:
-            del TerminalKeyInput._keyHandlers[idx]
+        if fun in TerminalKeyInput._keyHandlers:
+            TerminalKeyInput._keyHandlers.remove(fun)
 
     @staticmethod
     def clearKeys(enable):
