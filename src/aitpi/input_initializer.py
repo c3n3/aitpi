@@ -37,6 +37,8 @@ class TerminalKeyInput():
     # Our keyboard listener, only exists if someone uses 'key_interrupt'
     _listener = None
 
+    _keyHandlers = []
+
     @staticmethod
     def shouldSpawnThreads(should):
         if should and not TerminalKeyInput._willSpawnThreads:
@@ -55,6 +57,19 @@ class TerminalKeyInput():
         for key, time in TerminalKeyInput._clearKeys.items():
             pass
         TerminalKeyInput._scheduler.scheduleItem(1000, TerminalKeyInput.scheduleKeyClear, priority=-1)
+
+    @staticmethod
+    def registerKeyHandler(fun):
+        TerminalKeyInput._keyHandlers.append(fun)
+
+    @staticmethod
+    def removeKeyHandler(fun):
+        idx = -1
+        for item in TerminalKeyInput._keyHandlers:
+            if item == fun:
+                break
+        if idx != -1:
+            del TerminalKeyInput._keyHandlers[idx]
 
     @staticmethod
     def clearKeys(enable):
@@ -84,13 +99,17 @@ class TerminalKeyInput():
         """
 
         can = TerminalKeyInput._listener.canonical(key)
+        char = key
         if (hasattr(key, 'char')):
-            TerminalKeyInput.handleInterrupt(key.char, "1")
-        else:
-            TerminalKeyInput.handleInterrupt(key, "1")
+            char = key.char
+
+        TerminalKeyInput.handleInterrupt(char, "1")
 
         for h in TerminalKeyInput._hotkeys:
             h.press(can)
+
+        for handler in TerminalKeyInput._keyHandlers:
+            handler(char, constants.BUTTON_PRESS)
 
         if TerminalKeyInput._debug:
             TerminalKeyInput._pressed.add(can)
@@ -106,11 +125,16 @@ class TerminalKeyInput():
         # We are not guaranteed a char input, NOTE: Maybe we need to support non char keys?
 
         can = TerminalKeyInput._listener.canonical(key)
+        char = key
         if (hasattr(key, 'char')):
-            TerminalKeyInput.handleInterrupt(key.char, "0")
+            char = key.char
+        TerminalKeyInput.handleInterrupt(char, "0")
 
         for h in TerminalKeyInput._hotkeys:
             h.release(can)
+
+        for handler in TerminalKeyInput._keyHandlers:
+            handler(char, constants.BUTTON_RELEASE)
 
         if TerminalKeyInput._debug and can in TerminalKeyInput._pressed:
             TerminalKeyInput._pressed.remove(can)
@@ -178,6 +202,15 @@ class TerminalKeyInput():
         return fun
 
     @staticmethod
+    def startKeyListener():
+        from pynput import keyboard
+        TerminalKeyInput._listener = keyboard.Listener(
+            on_press=TerminalKeyInput.onPress,
+            on_release=TerminalKeyInput.onRelease
+        )
+        TerminalKeyInput._listener.start()
+
+    @staticmethod
     def registerKeyInterrupt(key):
         """ Registers a new interrupt key to report
 
@@ -185,12 +218,7 @@ class TerminalKeyInput():
             key (Dictionary): Information about the key
         """
         if (TerminalKeyInput._listener == None):
-            from pynput import keyboard
-            TerminalKeyInput._listener = keyboard.Listener(
-                on_press=TerminalKeyInput.onPress,
-                on_release=TerminalKeyInput.onRelease
-            )
-            TerminalKeyInput._listener.start()
+            TerminalKeyInput.startKeyListener()
         # Make sure we have do not have duplicate keys anywhere:
         if (key['trigger'] in TerminalKeyInput._keyInterrupts):
             Printer.print("Duplicate trigger '%s', ignoring" % key['trigger'])
@@ -219,12 +247,7 @@ class TerminalKeyInput():
             encoder (Dictionary): Info about the encoder
         """
         if (TerminalKeyInput._listener == None):
-            from pynput import keyboard
-            TerminalKeyInput._listener = keyboard.Listener(
-                on_press=TerminalKeyInput.onPress,
-                on_release=TerminalKeyInput.onRelease
-            )
-            TerminalKeyInput._listener.start()
+            TerminalKeyInput.startKeyListener()
         # Make sure we have do not have duplicate keys anywhere:
         if (encoder['left_trigger'] in TerminalKeyInput._keyInterrupts):
             Printer.print("Duplicate trigger '%s', ignoring encoder" % (encoder['left_trigger']))

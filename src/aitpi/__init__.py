@@ -202,3 +202,14 @@ def pyqt6KeyReleaseEvent(event):
     """ Takes in key events from pyqt6 for seemless integration
     """
     input_initializer.TerminalKeyInput.onRelease(pyqt6_key_map.pyqt6Map[event.key()])
+
+def registerKeyHandler(fun):
+    """ Takes a function that can handle key interrupts directly
+        fun(char, aitpi.BUTTON_PRESS | aitpi.BUTTON_RELEASE)
+    """
+    input_initializer.TerminalKeyInput.registerKeyHandler(fun)
+
+def removeKeyHandler(fun):
+    """ Remove function from the key handler list
+    """
+    input_initializer.TerminalKeyInput.removeKeyHandler(fun)
