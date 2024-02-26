@@ -141,8 +141,7 @@ class InputConverter():
         cmd = InputConverter.toCommand(input_unit['reg_link'])
         if (not CommandRegistry.contains(cmd[0], cmd[1])
             and input_unit['reg_link'] != ''):
-            Printer.print("Found invalid input_unit command '{}', removing...".format(input_unit['reg_link']))
-            input_unit['reg_link'] = ''
+            Printer.print("Found invalid input_unit command '{}'".format(input_unit['reg_link']))
 
         if ('name' in input_unit and InputConverter.getIndex(input_unit['name'])):
             Printer.print("Duplicate name '{}', Not adding.".format(input_unit['name']), Printer.ERROR)
