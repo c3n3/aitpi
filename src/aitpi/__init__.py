@@ -1,4 +1,3 @@
-from setuptools import Command
 from .message import CleanUp
 from .printer import Printer
 from . import router
