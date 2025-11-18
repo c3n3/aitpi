@@ -1,12 +1,11 @@
-from os import stat
 from .printer import Printer
 from . import router
 from .message import *
 from . import constants
 from .input_unit import InputUnit
 from .scheduler_thread import SchedulerThread
+from pynput import keyboard
 
-import time
 
 class TerminalKeyInput():
     """Handles input from a keyboard
@@ -35,7 +34,7 @@ class TerminalKeyInput():
     _keyInterrupts = {}
 
     # Our keyboard listener, only exists if someone uses 'key_interrupt'
-    _listener = None
+    _listener: keyboard.Listener = None
 
     _keyHandlers = []
 
@@ -93,7 +92,6 @@ class TerminalKeyInput():
         Args:
             key (Key): A key object defined by pynput
         """
-
         can = TerminalKeyInput._listener.canonical(key)
         char = key
         if (hasattr(key, 'char')):
@@ -199,7 +197,9 @@ class TerminalKeyInput():
 
     @staticmethod
     def startKeyListener():
-        from pynput import keyboard
+        if TerminalKeyInput._listener is not None:
+            return
+
         TerminalKeyInput._listener = keyboard.Listener(
             on_press=TerminalKeyInput.onPress,
             on_release=TerminalKeyInput.onRelease
@@ -222,7 +222,6 @@ class TerminalKeyInput():
         TerminalKeyInput._keyInterrupts[key['trigger']] = "_button_{}".format(key['name'])
 
         if (len(key['trigger']) > 1):
-            from pynput import keyboard
             from .releasable_hotkey import ReleaseableHotkey
             try:
                 keys = keyboard.HotKey.parse(key['trigger'])
